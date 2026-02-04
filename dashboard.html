@@ -34,21 +34,28 @@
             <div class="card-grid" id="monitorContainer">
                 <div class="card">
                     <div class="icon">💧</div>
-                    <div class="value" id="humidity">--%</div>
+                    <div class="value"><span id="humidity">--%</span></div>
                     <div class="label">Humidity</div>
                 </div>
 
                 <div class="card">
                     <div class="icon">🌡️</div>
-                    <div class="value" id="temperature">--°C</div>
+                    <div class="value"><span id="temperature">--°C</span></div>
                     <div class="label">Temperature</div>
                 </div>
 
                 <div class="card">
                     <div class="icon">💨</div>
-                    <div class="value" id="ventilation">--</div>
+                    <div class="value"><span id="ventilation" class="status">--</span></div>
                     <div class="label">Ventilation</div>
                 </div>
+            </div>
+
+            <div class="section hidden" id="details">
+                <h3>Transport Details</h3>
+                <div class="info-row"><span>ID:</span><b id="d-id"></b></div>
+                <div class="info-row"><span>Route:</span><b id="d-route"></b></div>
+                <div class="info-row"><span>Status:</span><b id="d-status"></b></div>
             </div>
 
             <div class="section">
