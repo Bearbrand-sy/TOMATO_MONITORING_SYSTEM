@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <h2>Dashboard</h2>
+        <h2>GreenGrow</h2>
         <button class="active" onclick="showSection('monitoring')">Monitoring</button>
         <button onclick="showSection('datalogs')">Data Logs</button>
         <button onclick="showSection('transport')">Transport Logs</button>
@@ -20,8 +20,46 @@
 
 
     <div class="main">
+        <h1>Monitoring Dashboard</h1>
+        <div class="section">
+            
+                <h3 style="color: #e02525;">Automation Settings</h3>
+                <div class="info-row">
+                    <span>Humidity Threshold:</span>
+                    <b>53 %</b>
+                </div>
+                <div class="info-row">
+                    <span>Temperature Limit:</span>
+                    <b>16 °C</b>
+                </div>
+                <div class="info-row">
+                    <span>Auto Ventilation:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-ventilation" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: #e02525;">Plant Details</h3>
+                <div class="info-row">
+                    <span>Plant Name:</span>
+
+                    <b>Tomato</b>
+                </div>
+                <div class="info-row">
+                    <span>Ideal Temperature:</span>
+                    <b>15 – 30 °C</b>
+                </div>
+                <div class="info-row">
+                    <span>Ideal Humidity:</span>
+                    <b>50 – 60 %</b>
+                </div>
+            </div>
+            
         <div class="section" id="monitoring">
-            <h3>Monitoring Dashboard</h3>
+            <h3>Monitoring Transport</h3>
 
             <select class="transpo"  id="transpo" onchange="updateTransport()">
                 <option value="">Select Transport</option>
@@ -58,41 +96,9 @@
                 <div class="info-row"><span>Status:</span><b id="d-status"></b></div>
             </div>
 
-            <div class="section">
-                <h3 style="color: #e02525;">Plant Details</h3>
-                <div class="info-row">
-                    <span>Plant Name:</span>
+            
 
-                    <b>Tomato</b>
-                </div>
-                <div class="info-row">
-                    <span>Ideal Temperature:</span>
-                    <b>15 – 30 °C</b>
-                </div>
-                <div class="info-row">
-                    <span>Ideal Humidity:</span>
-                    <b>50 – 60 %</b>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3 style="color: #e02525;">Automation Settings</h3>
-                <div class="info-row">
-                    <span>Humidity Threshold:</span>
-                    <b>53 %</b>
-                </div>
-                <div class="info-row">
-                    <span>Temperature Limit:</span>
-                    <b>16 °C</b>
-                </div>
-                <div class="info-row">
-                    <span>Auto Ventilation:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="auto-ventilation" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
+            
         </div>
 
         <div class="section hidden" id="datalogs">
