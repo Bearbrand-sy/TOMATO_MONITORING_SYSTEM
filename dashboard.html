@@ -17,6 +17,85 @@
             <button onclick="logout()" style="margin-top: 10px; width: 100%;">Logout</button>
         </div>
     </div>
+
+
+    <div class="main">
+        <div class="section" id="monitoring">
+            <h3>Monitoring Dashboard</h3>
+
+            <select class="transpo" name="Transport" id="transpo">
+                <option value="" id="transpo-1">Transport 1</option>
+                <option value="" id="transpo-2">Transport 2</option>
+                <option value="" id="transpo-3">Transport 3</option>
+            </select>
+
+
+            <div  class="card-grid" >
+                <div class="card">
+                    <div class="icon">💧</div>
+                    <div class="value">52%</div>
+                    <div class="label">Humidity</div>
+                </div>
+                <div class="card">
+                    <div class="icon">🌡️</div>
+                    <div class="value">26°C</div>
+                    <div class="label">Temperature</div>
+                </div>
+                <div class="card">
+                    <div class="icon">💨</div>
+                    <div class="value"><span id="ventilation" class="status">ON</span></div>
+                    <div class="label">Ventilation</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: #e02525;">Plant Details</h3>
+                <div class="info-row">
+                    <span>Plant Name:</span>
+
+                    <b>Tomato</b>
+                </div>
+                <div class="info-row">
+                    <span>Ideal Temperature:</span>
+                    <b>15 – 30 °C</b>
+                </div>
+                <div class="info-row">
+                    <span>Ideal Humidity:</span>
+                    <b>50 – 60 %</b>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: #e02525;">Automation Settings</h3>
+                <div class="info-row">
+                    <span>Humidity Threshold:</span>
+                    <b>53 %</b>
+                </div>
+                <div class="info-row">
+                    <span>Temperature Limit:</span>
+                    <b>16 °C</b>
+                </div>
+                <div class="info-row">
+                    <span>Auto Ventilation:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-ventilation" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="datalogs">
+            <h3>Data Logs</h3>
+            <p>Data logs content will appear here..</p>
+        </div>
+
+        <div class="section hidden" id="transport">
+            <h3>Transport Logs</h3>
+            <p>Transport logs content will appear here..</p>
+        </div>
+    </div>
+
 </body>
 <script src="dashboard.js"></script>
 </html>
