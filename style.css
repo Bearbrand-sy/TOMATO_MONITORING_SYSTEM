@@ -41,3 +41,8 @@
             background: #f0f8ff;
             color: #333;
         }
+
+        .user-info {
+            margin-top: auto;
+            padding-bottom: 2.5rem;
+        }
