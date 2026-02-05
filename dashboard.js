@@ -1,7 +1,6 @@
 const transportData = {
         1: { temp: "26°C", hum: "52%", vent: "ON", product:"Tomatoes" , route: "Manolo Farm → CDO Market", status: "Safe" },
         2: { temp: "30°C", hum: "60%", vent: "OFF", product:"Tomatoes" , route: "Manolo Farm → Davao Market", status: "Warning" },
-        3: { temp: "22°C", hum: "48%", vent: "ON", product:"Tomatoes" , route: "Manolo Farm → General Santos Market", status: "Safe" }
 };
 
 function updateTransport() {

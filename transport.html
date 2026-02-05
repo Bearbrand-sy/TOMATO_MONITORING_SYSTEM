@@ -22,71 +22,76 @@
 
 <div class="main">
     <h2>Transport Logs</h2>
+    <div class="filter-section">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="filterTransport()">
+        
+        <select id="timeFilter" class="filter-select" onchange="filterTransport()">
+            <option value="all">All Time</option>
+            <option value="daily">Today</option>
+            <option value="weekly">This Week</option>
+            <option value="monthly">This Month</option>
+        </select>
 
-        <div class="filter-section">
-            <select id="timeFilter" class="filter-select" onchange="filterTransport()">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-            </select>
-        </div>
+        <select id="statusFilter" class="filter-select" onchange="filterTransport()">
+            <option value="all">All Status</option>
+            <option value="delivered">Delivered</option>
+            <option value="in-transit">In Transit</option>
+        </select>
+    </div>
 
-        <div class="logs-container">
-            <table class="logs-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Transport ID</th>
-                        <th>Plant Name</th>
-                        <th>Origin</th>
-                        <th>Destination</th>
-                        <th>Temperature</th>
-                        <th>Humidity</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="transportBody">
-                    <tr>
-                        <td>2026-02-05</td>
-                        <td>1</td>
-                        <td>Tomato</td>
-                        <td>Manolo Farm</td>
-                        <td>CDO Market</td>
-                        <td>26°C</td>
-                        <td>52%</td>
-                        <td class="status-active">Delivered</td>
-                    </tr>
-                    <tr>
-                        <td>2026-02-05</td>
-                        <td>2</td>
-                        <td>Tomato</td>
-                        <td>Manolo Farm</td>
-                        <td>Davao Market</td>
-                        <td>30°C</td>
-                        <td>60%</td>
-                        <td class="status-pending">In Transit</td>
-                    </tr>
-                    <tr>
-                        <td>2026-02-04</td>
-                        <td>3</td>
-                        <td>Tomato</td>
-                        <td>Manolo Farm</td>
-                        <td>Gensan Market</td>
-                        <td>22°C</td>
-                        <td>48%</td>
-                        <td class="status-active">Delivered</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
+    <div class="logs-container">
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Transport ID</th>
+                    <th>Plant Name</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Temperature</th>
+                    <th>Humidity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="transportBody">
+                <tr data-date="2026-02-05" data-status="delivered">
+                    <td>2026-02-05</td>
+                    <td>TR-001</td>
+                    <td>Tomato</td>
+                    <td>Manolo Farm</td>
+                    <td>CDO Market</td>
+                    <td>26°C</td>
+                    <td>52%</td>
+                    <td><span class="status-delivered">Delivered</span></td>
+                    <td><button class="view-btn" onclick="viewDetails('TR-001')">View</button></td>
+                </tr>
+                <tr data-date="2026-02-05" data-status="in-transit">
+                    <td>2026-02-05</td>
+                    <td>TR-002</td>
+                    <td>Tomato</td>
+                    <td>Manolo Farm</td>
+                    <td>Davao Market</td>
+                    <td>30°C</td>
+                    <td>60%</td>
+                    <td><span class="status-transit">In Transit</span></td>
+                    <td><button class="view-btn" onclick="viewDetails('TR-002')">View</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Transport Details</h3>
+        <div id="modalBody"></div>
+    </div>
+</div>
 </div>
 
 </body>
- <script>
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = "index.html";
-            }
-        }
-    </script>
+ <script src="transport.js"> </script>
 </html>
