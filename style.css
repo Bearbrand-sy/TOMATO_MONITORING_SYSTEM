@@ -11,7 +11,6 @@ body {
     background: #fffbf1;
 }
 
-
 .sidebar {
     width: 200px;
     background: #1b9225;
@@ -19,6 +18,12 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh; 
+    overflow-y: auto; 
+    z-index: 100; 
 }
 
 .sidebar h2 {
@@ -41,11 +46,12 @@ body {
     background: rgba(255, 255, 255, 0.15);
 }
 
-.sidebar .nav-btn.active {
-    background: rgba(255, 255, 255, 0.25);
-    font-weight: bold;
+.main {
+    margin-left: 220px; 
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
 }
-
 
 .user-info button {
     width: 100%;

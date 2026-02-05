@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Transport Logs</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="transport.css">
 </head>
 <body>
 
@@ -23,7 +24,6 @@
     <h2>Transport Logs</h2>
 
         <div class="filter-section">
-            <label for="timeFilter">Show:</label>
             <select id="timeFilter" class="filter-select" onchange="filterTransport()">
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
@@ -87,10 +87,6 @@
             if (confirm('Are you sure you want to logout?')) {
                 window.location.href = "index.html";
             }
-        }
-        function filterTransport() {
-            const filter = document.getElementById("timeFilter").value;
-            alert("Filter set to: " + filter);
         }
     </script>
 </html>
