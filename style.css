@@ -14,7 +14,7 @@ body {
 
 .sidebar {
     width: 200px;
-    background: #138b1d;
+    background: #1b9225;
     color: white;
     padding: 20px;
     display: flex;
@@ -122,7 +122,7 @@ body {
 }
 
 .card {
-    background: #138b1d;
+    background: #1b9225;
     color: white;
     padding: 20px;
     border-radius: 12px;
@@ -130,20 +130,22 @@ body {
 }
 
 .card .icon {
-    font-size: 32px;
-    margin-bottom: 10px;
+    font-size: 24px;
+    margin-bottom: 2px;
 }
 
-.card .value {
-    font-size: 24px;
+.card p{
+    font-size: 16px;
+    font-family: inherit;
+    margin-bottom: 3px;
     font-weight: bold;
 }
 
-.card .label {
-    font-size: 14px;
-    opacity: 0.9;
+.card span{
+    font-size: 18px;
+    font-family: inherit;
+    text-align: center;
 }
-
 
 .transpo {
     width: 9rem;
@@ -239,3 +241,4 @@ input:checked + .slider:before {
         width: 180px;
     }
 }
+
