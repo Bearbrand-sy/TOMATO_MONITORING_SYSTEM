@@ -74,7 +74,7 @@ body {
 }
 
 .card {
-    background: #8b4513;
+    background: #138b1d;
     color: white;
     padding: 20px;
     border-radius: 4px;
@@ -134,10 +134,6 @@ body {
     transition: border-color 0.3s;
 }
 
-.transpo:focus {
-    outline: none;
-    border-color: #8b4513;
-}
 
 
 #monitorContainer {
@@ -156,9 +152,7 @@ body {
     opacity: 0;
     transform: translateY(15px);
     transition: opacity 0.5s ease, transform 0.5s ease;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-left: 4px solid #8b4513;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: none;
     padding: 20px;
     border-radius: 4px;
 }
