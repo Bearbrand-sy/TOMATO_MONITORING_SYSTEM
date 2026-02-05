@@ -7,115 +7,72 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="sidebar">
-        <h2 style="color: #fffaee">🌿GreenGrow</h2>
-        <button class="active" onclick="showSection('monitoring')">Monitoring</button>
-        <button onclick="showSection('datalogs')">Data Logs</button>
-        <button onclick="showSection('transport')">Transport Logs</button>
-        
-        <div class="user-info">
-            <button onclick="logout()" style="margin-top: 10px; width: 100%;">Logout</button>
+
+<div class="sidebar">
+    <h2 style="color:#fffaee">🌿GreenGrow</h2>
+    <a href="dashboard.html" class="nav-btn active">Monitoring</a>
+    <a href="datalogs.html" class="nav-btn">Data Logs</a>
+    <a href="transport.html" class="nav-btn">Transport Logs</a>
+
+    <div class="user-info">
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="main">
+    <h2>Monitoring Dashboard</h2>
+
+
+    <div class="section">
+        <div class="two-column">
+            <div class="column">
+                <h3>Plant Details</h3>
+                <div class="info-row"><span>Plant:</span><b>Tomato</b></div>
+                <div class="info-row"><span>Temp:</span><b>15–30 °C</b></div>
+                <div class="info-row"><span>Humidity:</span><b>50–60%</b></div>
+            </div>
+
+            <div class="column">
+                <h3>Automation</h3>
+                <div class="info-row"><span>Humidity Threshold:</span><b>53%</b></div>
+                <div class="info-row"><span>Temp Limit:</span><b>16 °C</b></div>
+                <div class="info-row">
+                    <span>Auto Ventilation:</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 
+    <div class="section">
+        <h3>Monitoring Transport</h3>
 
-    <div class="main">
-        <h2 style="margin-bottom: 4px;">Monitoring Dashboard</h2>
-        <div class="section">
-    <div class="two-column">
-        <div class="column">
-            <h3 style="color:#138b1d;">Plant Details</h3>
-            <div class="info-row">
-                <span>Plant Name:</span>
-                <b>Tomato</b>
-            </div>
+        <select id="transpo" class="transpo" onchange="updateTransport()">
+            <option value="">Select Transport</option>
+            <option value="1">Transport 1</option>
+            <option value="2">Transport 2</option>
+            <option value="3">Transport 3</option>
+        </select>
 
-            <div class="info-row">
-                <span>Ideal Temperature:</span>
-                <b>15 – 30 °C</b>
-            </div>
-
-            <div class="info-row">
-                <span>Ideal Humidity:</span>
-                <b>50 – 60 %</b>
-            </div>
-             </div>
-
-        <div class="column">
-            <h3 style="color:#138b1d;">Automation Settings</h3>
-            <div class="info-row">
-                <span>Humidity Threshold:</span>
-                <b>53 %</b>
-            </div>
-            <div class="info-row">
-                <span>Temperature Limit:</span>
-                <b>16 °C</b>
-            </div>
-            <div class="info-row">
-                <span>Auto Ventilation:</span>
-                <label class="switch">
-                    <input type="checkbox" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
+        <div class="card-grid" id="monitorContainer">
+            <div class="card"><div class="icon">💧</div><span id="humidity">--%</span></div>
+            <div class="card"><div class="icon">🌡️</div><span id="temperature">--°C</span></div>
+            <div class="card"><div class="icon">💨</div><span id="ventilation">--</span></div>
         </div>
+
+        <div class="section hidden" id="details">
+            <h3>Transport Details</h3>
+            <div class="info-row"><span>ID:</span><b id="d-id"></b></div>
+            <div class="info-row"><span>Product:</span><b id="d-product"></b></div>
+            <div class="info-row"><span>Route:</span><b id="d-route"></b></div>
+            <div class="info-row"><span>Status:</span><b id="d-status"></b></div>
         </div>
     </div>
-      
-        <div class="section" id="monitoring">
-            <h3>Monitoring Transport</h3>
+</div>
 
-            <select class="transpo"  id="transpo" onchange="updateTransport()">
-                <option value="">Select Transport</option>
-                <option value="1" >Transport 1</option>
-                <option value="2" >Transport 2</option>
-                <option value="3" >Transport 3</option>
-            </select>
-
-
-            <div class="card-grid" id="monitorContainer">
-                <div class="card">
-                    <div class="icon">💧</div>
-                    <div class="value"><span id="humidity">--%</span></div>
-                    <div class="label">Humidity</div>
-                </div>
-
-                <div class="card">
-                    <div class="icon">🌡️</div>
-                    <div class="value"><span id="temperature">--°C</span></div>
-                    <div class="label">Temperature</div>
-                </div>
-
-                <div class="card">
-                    <div class="icon">💨</div>
-                    <div class="value"><span id="ventilation" class="status">--</span></div>
-                    <div class="label">Ventilation</div>
-                </div>
-            </div>
-
-            <div class="section hidden" id="details">
-                <h3>Transport Details</h3>
-                <div class="info-row"><span>ID:</span><b id="d-id"></b></div>
-                <div class="info-row"><span>Route:</span><b id="d-route"></b></div>
-                <div class="info-row"><span>Status:</span><b id="d-status"></b></div>
-            </div>
-
-            
-
-            
-        </div>
-
-        <div class="section hidden" id="datalogs">
-            <h3>Data Logs</h3>
-            <p>Data logs content will appear here..</p>
-        </div>
-
-        <div class="section hidden" id="transport">
-            <h3>Transport Logs</h3>
-            <p>Transport logs content will appear here..</p>
-        </div>
-    </div>
-
-</body>
 <script src="dashboard.js"></script>
+</body>
 </html>
