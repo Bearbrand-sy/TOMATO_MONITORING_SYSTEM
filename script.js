@@ -8,7 +8,7 @@ function login() {
 
     if (userEmail === validUserEmail && userPass === validUserPass) {
         alert("Login Successful");
-        window.location.href = "dashboard.html";
+        window.location.href = "./dashboard/dashboard.html";
     } else {
         alert("Invalid username or password");
     }
