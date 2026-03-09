@@ -10,10 +10,9 @@
 
 <div class="sidebar">
     <h2 style="color:#fffaee">🌿GreenGrow</h2>
-    <a href="dashboard.html" class="nav-btn active">Monitoring</a>
-    <a href="datalogs.html" class="nav-btn">Data Logs</a>
+    <a href="manager.html" class="nav-btn active">Monitoring</a>
+    <a href="datalogsuser.html" class="nav-btn">Data Logs</a>
     <a href="transport.html" class="nav-btn">Transport Logs</a>
-    <a href="#" class="nav-btn" onclick="showSection('users', this)">Users</a>
 
     <div class="user-info">
         <button onclick="logout()">Logout</button>
@@ -66,27 +65,6 @@
         </div>
     </div>
 
-        <!-- USERS SECTION -->
-    <div id="section-users" style="display:none;">
-        <h2>User Accounts</h2>
-        <div class="section">
-            <table class="user-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Contact Number</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-
 </body>
 <script src="datalogs.js"></script>
-<script src="dashboard.js"></script>
 </html>

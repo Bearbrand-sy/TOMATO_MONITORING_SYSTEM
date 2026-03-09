@@ -10,10 +10,10 @@
 
 <div class="sidebar">
     <h2 style="color:#fffaee">🌿GreenGrow</h2>
-    <a href="dashboard.html" class="nav-btn active" onclick="showSection('monitoring', this)">Monitoring</a>
+    <a href="dashboard.html" class="nav-btn">Monitoring</a>
     <a href="datalogs.html" class="nav-btn">Data Logs</a>
     <a href="transport.html" class="nav-btn">Transport Logs</a>
-    <a href="#" class="nav-btn" onclick="showSection('users', this)">Users</a>
+    <a href="#" class="nav-btn active" onclick="showSection('users')">Users</a>
 
     <div class="user-info">
         <button onclick="logout()">Logout</button>
@@ -94,6 +94,7 @@
 
 </div>
 
-<script src="dashboard.js"></script>
+<script src="manager.js"></script>
+<script src="users.js"></script>
 </body>
 </html>
