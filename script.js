@@ -1,7 +1,7 @@
 const users = [
-    { email: "admin", pass: "12345", redirect: "dashboard.html" },
-    { email: "manager", pass: "manager123", redirect: "manager.html" },
-    { email: "user@email.com", pass: "user1234", redirect: "user.html" }
+    { email: "admin@gmail.com", pass: "12345", redirect: "dashboard.html" },
+    { email: "manager@gmail.com", pass: "12345", redirect: "manager.html" },
+    { email: "user@gmail.com", pass: "12345", redirect: "user.html" }
 ];
 
 function login() {

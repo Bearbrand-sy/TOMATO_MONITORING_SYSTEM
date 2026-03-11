@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Accounts</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="account.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2 style="color:#fffaee">🌿GreenGrow</h2>
+
+<a href="manager.html" class="nav-btn">Monitoring</a>
+<a href="datalogsmanager.html" class="nav-btn">Data Logs</a>
+<a href="transportmanager.html" class="nav-btn">Transport Logs</a>
+<a href="accounts_manager.html" class="nav-btn active">Users</a>
+
+<div class="user-info">
+<button onclick="logout()">Logout</button>
+</div>
+</div>
+
+<div class="main">
+
+<h2>User Management</h2>
+
+<div class="section">
+
+<h3>Add User</h3>
+
+<input type="text" id="name" placeholder="Full Name">
+<input type="text" id="email" placeholder="Email">
+<input type="text" id="contact" placeholder="Contact Number">
+
+<select id="role">
+<option value="User">User</option>
+<option value="Manager">Manager</option>
+</select>
+
+<button onclick="addUser()">Add User</button>
+
+</div>
+
+
+<div class="section">
+
+<h3>User Accounts</h3>
+
+<table class="user-table">
+
+<thead>
+<tr>
+<th>#</th>
+<th>Name</th>
+<th>Email</th>
+<th>Contact</th>
+<th>Role</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="userTableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="account_manager.js"></script>
+
+<script>
+renderUsers();
+</script>
+
+</body>
+</html>
+```

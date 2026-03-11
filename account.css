@@ -1,0 +1,85 @@
+input, select {
+    padding: 10px;
+    margin: 6px 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+
+/* =========================
+   ADD USER BUTTON
+========================= */
+
+.add-btn {
+    background-color: #00ad0e;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    margin-top: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.add-btn:hover {
+    background-color: #008f0c;
+}
+
+
+/* =========================
+   DELETE BUTTON
+========================= */
+
+.delete-btn {
+    background-color: #ff3b3b;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #d62828;
+}
+
+
+/* =========================
+   USER TABLE
+========================= */
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.user-table th {
+    background: #00ad0e;
+    color: white;
+    padding: 10px;
+}
+
+.user-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+
+/* =========================
+   ROLE BADGES
+========================= */
+
+.role-badge {
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}

@@ -11,8 +11,7 @@
 <div class="sidebar">
     <h2 style="color:#fffaee">🌿GreenGrow</h2>
     <a href="user.html" class="nav-btn">Monitoring</a>
-    <a href="datalogs.html" class="nav-btn">Data Logs</a>
-    <a href="transport.html" class="nav-btn">Transport Logs</a>
+    <a href="transportuser.html" class="nav-btn">Transport Logs</a>
     
 
     <div class="user-info">
@@ -20,7 +19,60 @@
     </div>
 </div>
 
+<div class="main">
 
+    <!-- MONITORING SECTION -->
+    <div id="section-monitoring">
+        <h2>Monitoring Dashboard</h2>
+
+        <div class="section">
+            <div class="two-column">
+                <div class="column">
+                    <h3 style="color: #00ad0e;">Plant Details</h3>
+                    <div class="info-row"><span>Plant:</span><b>Tomato</b></div>
+                    <div class="info-row"><span>Temp:</span><b>15–30 °C</b></div>
+                    <div class="info-row"><span>Humidity:</span><b>50–60%</b></div>
+                </div>
+                <div class="column">
+                    <h3 style="color: #00ad0e;">Automation</h3>
+                    <div class="info-row"><span>Humidity Threshold:</span><b>53%</b></div>
+                    <div class="info-row"><span>Temp Limit:</span><b>16 °C</b></div>
+                    <div class="info-row">
+                        <span>Auto Ventilation:</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Monitoring Transport</h3>
+            <select id="transpo" class="transpo" onchange="updateTransport()">
+                <option value="">Select Transport</option>
+                <option value="1">Transport 1</option>
+                <option value="2">Transport 2</option>
+            </select>
+
+            <div class="card-grid" id="monitorContainer">
+                <div class="card"><div class="icon">💧</div><p>Humidity</p><span id="humidity">--%</span></div>
+                <div class="card"><div class="icon">🌡️</div><p>Temperature</p><span id="temperature">--°C</span></div>
+                <div class="card"><div class="icon">💨</div><p>Ventilation</p><span id="ventilation">--</span></div>
+            </div>
+
+            <div class="section hidden" id="details">
+                <h3>Transport Details</h3>
+                <div class="info-row"><span>ID:</span><b id="d-id"></b></div>
+                <div class="info-row"><span>Product:</span><b id="d-product"></b></div>
+                <div class="info-row"><span>Route:</span><b id="d-route"></b></div>
+                <div class="info-row"><span>Status:</span><b id="d-status"></b></div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <script>
     function logout() {
