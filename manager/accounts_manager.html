@@ -5,271 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreenGrow · Users</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg: #f0f7f1;
-            --surface: #ffffff;
-            --surface2: #edf7ee;
-            --border: #d0e8d2;
-            --green: #1a9e3f;
-            --green-dim: #22c55e18;
-            --green-glow: #22c55e28;
-            --amber: #d97706;
-            --red: #dc2626;
-            --text: #14271a;
-            --muted: #6b8f72;
-            --sidebar-w: 220px;
-        }
-
-        body {
-            font-family: 'DM Mono', monospace;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ── SIDEBAR ── */
-        .sidebar {
-            width: var(--sidebar-w);
-            background: #e8f5ea;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 28px 16px;
-            position: fixed;
-            top: 0; left: 0; bottom: 0;
-            z-index: 100;
-        }
-        .logo {
-            font-family: 'Fraunces', serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--green);
-            letter-spacing: -0.02em;
-            padding: 0 8px 28px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-        .logo span { color: var(--muted); font-size: .85rem; display: block; font-weight: 300; margin-top: 2px; }
-
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--muted);
-            font-size: .78rem;
-            letter-spacing: .04em;
-            text-transform: uppercase;
-            transition: all .2s;
-            margin-bottom: 4px;
-        }
-        .nav-btn::before {
-            content: '';
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--border);
-            transition: background .2s;
-            flex-shrink: 0;
-        }
-        .nav-btn:hover { color: var(--text); background: var(--surface2); }
-        .nav-btn:hover::before { background: var(--muted); }
-        .nav-btn.active { color: var(--green); background: var(--green-dim); }
-        .nav-btn.active::before { background: var(--green); box-shadow: 0 0 6px var(--green); }
-
-        .sidebar-foot {
-            margin-top: auto;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        .logout-btn {
-            width: 100%;
-            padding: 9px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--muted);
-            font-family: 'DM Mono', monospace;
-            font-size: .75rem;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .logout-btn:hover { border-color: var(--red); color: var(--red); }
-
-        /* ── MAIN ── */
-        .main {
-            margin-left: var(--sidebar-w);
-            flex: 1;
-            padding: 36px 40px;
-        }
-
-        .page-header { margin-bottom: 28px; }
-        .page-header h1 {
-            font-family: 'Fraunces', serif;
-            font-size: 2rem;
-            font-weight: 300;
-            letter-spacing: -.02em;
-            color: var(--text);
-        }
-        .page-header p {
-            color: var(--muted);
-            font-size: .78rem;
-            margin-top: 4px;
-            letter-spacing: .04em;
-        }
-
-        /* ── PANEL ── */
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px #0d271514;
-        }
-        .panel-title {
-            font-size: .7rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .panel-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        /* ── ADD USER FORM ── */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .form-field label {
-            font-size: .68rem;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
-        .form-field input,
-        .form-field select {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 9px 12px;
-            color: var(--text);
-            font-family: 'DM Mono', monospace;
-            font-size: .82rem;
-            outline: none;
-            transition: border-color .2s;
-        }
-        .form-field input:focus,
-        .form-field select:focus { border-color: var(--green); }
-        .form-field input::placeholder { color: var(--muted); }
-
-        .btn-primary {
-            padding: 10px 22px;
-            border-radius: 8px;
-            border: none;
-            background: var(--green);
-            color: #fff;
-            font-family: 'DM Mono', monospace;
-            font-size: .78rem;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: opacity .2s, transform .1s;
-        }
-        .btn-primary:hover { opacity: .88; }
-        .btn-primary:active { transform: scale(.97); }
-
-        /* ── TABLE ── */
-        .table-wrap { overflow-x: auto; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .8rem;
-        }
-        thead tr { border-bottom: 2px solid var(--border); }
-        th {
-            text-align: left;
-            padding: 10px 14px;
-            font-size: .68rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--muted);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        tbody tr {
-            border-bottom: 1px solid var(--border);
-            transition: background .15s;
-        }
-        tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: var(--surface2); }
-        td {
-            padding: 11px 14px;
-            color: var(--text);
-            vertical-align: middle;
-        }
-
-        /* ── ROLE BADGE ── */
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: .68rem;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-        .badge-manager { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .badge-user    { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-
-        /* ── ACTION BUTTONS ── */
-        .btn-action {
-            padding: 5px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--muted);
-            font-family: 'DM Mono', monospace;
-            font-size: .7rem;
-            cursor: pointer;
-            transition: all .2s;
-            margin-right: 4px;
-        }
-        .btn-action:hover { border-color: var(--green); color: var(--green); }
-        .btn-action.danger:hover { border-color: var(--red); color: var(--red); }
-
-        @media (max-width: 700px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .main { padding: 24px 16px; }
-        }
-    </style>
+    <link rel="stylesheet" href="../manager_assets/account_manager.css">
 </head>
 <body>
 
@@ -283,6 +19,14 @@
     <a href="transportmanager.html" class="nav-btn">Transport Logs</a>
     <a href="accounts_manager.html" class="nav-btn active">Users</a>
     <div class="sidebar-foot">
+               <!-- Logged-in user card -->
+        <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div class="user-meta">
+                <div class="user-name" id="userName">—</div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+        </div>
         <button class="logout-btn" onclick="logout()">↩ Logout</button>
     </div>
 </div>
@@ -351,6 +95,31 @@ function logout() {
     }
 }
 if (typeof renderUsers === 'function') renderUsers();
+
+// ============================
+// LOAD LOGGED-IN USER
+// ============================
+(function loadUser() {
+    try {
+        const raw = localStorage.getItem("loggedUser");
+        if (!raw) return;
+        const user = JSON.parse(raw);
+
+        // Avatar: first letter of name
+        document.getElementById("userAvatar").textContent =
+            (user.name || "?").charAt(0).toUpperCase();
+
+        // Name
+        document.getElementById("userName").textContent = user.name || "Unknown";
+
+        // Role with colour
+        const roleEl = document.getElementById("userRole");
+        const role   = (user.role || "").toLowerCase();
+        roleEl.textContent  = user.role || "";
+        roleEl.className    = "user-role role-" + role;
+
+    } catch (e) { /* silently ignore parse errors */ }
+})();
 </script>
 </body>
 </html>

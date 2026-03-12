@@ -144,42 +144,58 @@
             background: var(--border);
         }
 
-        /* ── FILTER ROW ── */
-        .filter-row {
+        /* ── ADD USER FORM ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-field {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .search-input {
+        .form-field label {
+            font-size: .68rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .form-field input,
+        .form-field select {
             background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 8px 14px;
+            padding: 9px 12px;
             color: var(--text);
             font-family: 'DM Mono', monospace;
             font-size: .82rem;
             outline: none;
             transition: border-color .2s;
-            min-width: 200px;
         }
-        .search-input::placeholder { color: var(--muted); }
-        .search-input:focus { border-color: var(--green); }
+        .form-field input:focus,
+        .form-field select:focus { border-color: var(--green); }
+        .form-field input::placeholder { color: var(--muted); }
 
-        select.filter-select {
-            background: var(--surface2);
-            border: 1px solid var(--border);
+        .btn-primary {
+            padding: 10px 22px;
             border-radius: 8px;
-            color: var(--text);
+            border: none;
+            background: var(--green);
+            color: #fff;
             font-family: 'DM Mono', monospace;
-            font-size: .82rem;
-            padding: 8px 14px;
+            font-size: .78rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
             cursor: pointer;
-            outline: none;
-            transition: border-color .2s;
+            transition: opacity .2s, transform .1s;
         }
-        select.filter-select:focus { border-color: var(--green); }
+        .btn-primary:hover { opacity: .88; }
+        .btn-primary:active { transform: scale(.97); }
 
         /* ── TABLE ── */
         .table-wrap { overflow-x: auto; }
@@ -212,7 +228,7 @@
             vertical-align: middle;
         }
 
-        /* ── STATUS BADGES ── */
+        /* ── ROLE BADGE ── */
         .badge {
             display: inline-block;
             padding: 3px 10px;
@@ -222,12 +238,12 @@
             text-transform: uppercase;
             font-weight: 500;
         }
-        .badge-delivered { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .badge-transit   { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge-manager { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .badge-user    { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
 
-        /* ── VIEW BUTTON ── */
-        .btn-view {
-            padding: 5px 14px;
+        /* ── ACTION BUTTONS ── */
+        .btn-action {
+            padding: 5px 12px;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: transparent;
@@ -236,78 +252,16 @@
             font-size: .7rem;
             cursor: pointer;
             transition: all .2s;
-            white-space: nowrap;
+            margin-right: 4px;
         }
-        .btn-view:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
-
-        /* ── MODAL ── */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(20, 39, 26, 0.35);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.open { display: flex; }
-
-        .modal-content {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
-            min-width: 340px;
-            max-width: 480px;
-            width: 90%;
-            box-shadow: 0 16px 48px #0d271528;
-            animation: modalIn .25s ease;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(.95) translateY(8px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-header h3 {
-            font-family: 'Fraunces', serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text);
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: var(--muted);
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 6px;
-            transition: all .2s;
-        }
-        .modal-close:hover { background: var(--surface2); color: var(--text); }
-
-        .modal-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 9px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: .82rem;
-        }
-        .modal-row:last-child { border-bottom: none; }
-        .modal-row span { color: var(--muted); }
-        .modal-row b { color: var(--text); font-weight: 500; }
+        .btn-action:hover { border-color: var(--green); color: var(--green); }
+        .btn-action.danger:hover { border-color: var(--red); color: var(--red); }
 
         @media (max-width: 700px) {
+            .form-grid { grid-template-columns: 1fr; }
             .main { padding: 24px 16px; }
-            .filter-row { flex-direction: column; align-items: stretch; }
         }
+
 
         /* ── USER CARD (sidebar) ── */
         .user-card {

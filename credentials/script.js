@@ -1,6 +1,6 @@
 const users = [
     { email: "admin@gmail.com",   pass: "12345", name: "Admin",        role: "Admin",   redirect: "admin/dashboard.html" },
-    { email: "manager@gmail.com", pass: "12345", name: "Manager",      role: "Manager", redirect: "manager/dashboard.html" },
+    { email: "manager@gmail.com", pass: "12345", name: "Manager",      role: "Manager", redirect: "manager/manager.html" },
     { email: "user@gmail.com",    pass: "12345", name: "User",         role: "User",    redirect: "user/user.html" }
 ];
 

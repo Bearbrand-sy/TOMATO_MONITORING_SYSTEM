@@ -239,3 +239,53 @@
         @media (max-width: 700px) {
             .main { padding: 24px 16px; }
         }
+
+        /* ── USER CARD (sidebar) ── */
+        .user-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--green-dim);
+            border: 1.5px solid var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fraunces', serif;
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--green);
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .user-meta { min-width: 0; flex: 1; }
+
+        .user-name {
+            font-size: .78rem;
+            color: var(--text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: .63rem;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .role-admin   { color: #7c3aed; }
+        .role-manager { color: var(--green); }
+        .role-user    { color: var(--muted); }
