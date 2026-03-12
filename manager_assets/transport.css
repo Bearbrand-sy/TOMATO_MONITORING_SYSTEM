@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenGrow · Users</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
             --bg: #f0f7f1;
@@ -152,58 +144,42 @@
             background: var(--border);
         }
 
-        /* ── ADD USER FORM ── */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .form-field {
+        /* ── FILTER ROW ── */
+        .filter-row {
             display: flex;
-            flex-direction: column;
-            gap: 5px;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .form-field label {
-            font-size: .68rem;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
-        .form-field input,
-        .form-field select {
+        .search-input {
             background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 9px 12px;
+            padding: 8px 14px;
             color: var(--text);
             font-family: 'DM Mono', monospace;
             font-size: .82rem;
             outline: none;
             transition: border-color .2s;
+            min-width: 200px;
         }
-        .form-field input:focus,
-        .form-field select:focus { border-color: var(--green); }
-        .form-field input::placeholder { color: var(--muted); }
+        .search-input::placeholder { color: var(--muted); }
+        .search-input:focus { border-color: var(--green); }
 
-        .btn-primary {
-            padding: 10px 22px;
+        select.filter-select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            border: none;
-            background: var(--green);
-            color: #fff;
+            color: var(--text);
             font-family: 'DM Mono', monospace;
-            font-size: .78rem;
-            letter-spacing: .06em;
-            text-transform: uppercase;
+            font-size: .82rem;
+            padding: 8px 14px;
             cursor: pointer;
-            transition: opacity .2s, transform .1s;
+            outline: none;
+            transition: border-color .2s;
         }
-        .btn-primary:hover { opacity: .88; }
-        .btn-primary:active { transform: scale(.97); }
+        select.filter-select:focus { border-color: var(--green); }
 
         /* ── TABLE ── */
         .table-wrap { overflow-x: auto; }
@@ -236,7 +212,7 @@
             vertical-align: middle;
         }
 
-        /* ── ROLE BADGE ── */
+        /* ── STATUS BADGES ── */
         .badge {
             display: inline-block;
             padding: 3px 10px;
@@ -246,12 +222,12 @@
             text-transform: uppercase;
             font-weight: 500;
         }
-        .badge-manager { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .badge-user    { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+        .badge-delivered { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .badge-transit   { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 
-        /* ── ACTION BUTTONS ── */
-        .btn-action {
-            padding: 5px 12px;
+        /* ── VIEW BUTTON ── */
+        .btn-view {
+            padding: 5px 14px;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: transparent;
@@ -260,97 +236,75 @@
             font-size: .7rem;
             cursor: pointer;
             transition: all .2s;
-            margin-right: 4px;
+            white-space: nowrap;
         }
-        .btn-action:hover { border-color: var(--green); color: var(--green); }
-        .btn-action.danger:hover { border-color: var(--red); color: var(--red); }
+        .btn-view:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+        /* ── MODAL ── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 39, 26, 0.35);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.open { display: flex; }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            min-width: 340px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 16px 48px #0d271528;
+            animation: modalIn .25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(.95) translateY(8px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: all .2s;
+        }
+        .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: .82rem;
+        }
+        .modal-row:last-child { border-bottom: none; }
+        .modal-row span { color: var(--muted); }
+        .modal-row b { color: var(--text); font-weight: 500; }
 
         @media (max-width: 700px) {
-            .form-grid { grid-template-columns: 1fr; }
             .main { padding: 24px 16px; }
+            .filter-row { flex-direction: column; align-items: stretch; }
         }
-    </style>
-</head>
-<body>
-
-<div class="sidebar">
-    <div class="logo">
-        🌿 GreenGrow
-        <span>Farm Management</span>
-    </div>
-    <a href="manager.html" class="nav-btn">Monitoring</a>
-    <a href="datalogsmanager.html" class="nav-btn">Data Logs</a>
-    <a href="transportmanager.html" class="nav-btn">Transport Logs</a>
-    <a href="accounts_manager.html" class="nav-btn active">Users</a>
-    <div class="sidebar-foot">
-        <button class="logout-btn" onclick="logout()">↩ Logout</button>
-    </div>
-</div>
-
-<div class="main">
-    <div class="page-header">
-        <h1>User Management</h1>
-        <p>Manage accounts and roles</p>
-    </div>
-
-    <!-- Add User -->
-    <div class="panel">
-        <div class="panel-title">Add User</div>
-        <div class="form-grid">
-            <div class="form-field">
-                <label>Full Name</label>
-                <input type="text" id="name" placeholder="e.g. Juan Dela Cruz">
-            </div>
-            <div class="form-field">
-                <label>Email</label>
-                <input type="text" id="email" placeholder="e.g. juan@greengrow.ph">
-            </div>
-            <div class="form-field">
-                <label>Contact Number</label>
-                <input type="text" id="contact" placeholder="e.g. 09xxxxxxxxx">
-            </div>
-            <div class="form-field">
-                <label>Role</label>
-                <select id="role">
-                    <option value="User">User</option>
-                    <option value="Manager">Manager</option>
-                </select>
-            </div>
-        </div>
-        <button class="btn-primary" onclick="addUser()">+ Add User</button>
-    </div>
-
-    <!-- User Table -->
-    <div class="panel">
-        <div class="panel-title">Accounts</div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Contact</th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<script src="account_manager.js"></script>
-<script src="manager.js"></script>
-<script>
-function logout() {
-    if (confirm("Are you sure you want to logout?")) {
-        localStorage.removeItem("loggedUser");
-        window.location.href = "../index.html";
-    }
-}
-if (typeof renderUsers === 'function') renderUsers();
-</script>
-</body>
-</html>

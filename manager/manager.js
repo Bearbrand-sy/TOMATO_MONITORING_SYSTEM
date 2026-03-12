@@ -1,7 +1,6 @@
 // ============================
 // LOGOUT FUNCTION
 // ============================
-
 function logout() {
     if (confirm("Are you sure you want to logout?")) {
         localStorage.removeItem("loggedUser");
@@ -9,57 +8,121 @@ function logout() {
     }
 }
 
+// ============================
+// TRANSPORT DATA
+// ============================
+const transportData = {
+    1: {
+        id: "TR-001",
+        product: "Tomatoes",
+        route: "Farm → Davao Market",
+        status: "In Transit",
+        tempMin: 15,
+        tempMax: 30,
+        humidityMin: 50,
+        humidityMax: 60
+    },
+    2: {
+        id: "TR-002",
+        product: "Lettuce",
+        route: "Farm → Cold Storage",
+        status: "Arrived",
+        tempMin: 10,
+        tempMax: 20,
+        humidityMin: 60,
+        humidityMax: 75
+    }
+};
+
+let monitorInterval = null;
 
 // ============================
-// USER DATA
+// UPDATE TRANSPORT
 // ============================
+function updateTransport() {
+    const selected = document.getElementById("transpo").value;
 
-const users = [
-    { name: "Manager User",  email: "manager",        contact: "+63 900 000 0002", role: "Manager" },
-    { name: "Regular User",  email: "user@email.com", contact: "+63 900 000 0003", role: "User" }
-];
+    if (!selected) {
+        stopMonitoring();
+        return;
+    }
 
+    const data = transportData[selected];
 
-// ============================
-// RENDER USERS TABLE
-// ============================
+    // show details section
+    document.getElementById("details").classList.remove("hidden");
 
-function renderUsers() {
+    // update transport info
+    document.getElementById("d-id").innerText = data.id;
+    document.getElementById("d-product").innerText = data.product;
+    document.getElementById("d-route").innerText = data.route;
+    document.getElementById("d-status").innerText = data.status;
 
-    const tbody = document.getElementById("userTableBody");
-
-    // Prevent errors if table doesn't exist on this page
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    users.forEach((user, index) => {
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>${user.contact}</td>
-            <td>
-                <span class="role-badge ${user.role.toLowerCase()}">
-                    ${user.role}
-                </span>
-            </td>
-        `;
-
-        tbody.appendChild(row);
-
-    });
-
+    // start updating sensor values
+    startMonitoring(data);
 }
 
+// ============================
+// START MONITORING
+// ============================
+function startMonitoring(data) {
+    if (monitorInterval) clearInterval(monitorInterval);
+
+    // update immediately
+    updateSensors(data);
+
+    // then every 5 seconds
+    monitorInterval = setInterval(() => {
+        updateSensors(data);
+    }, 5000);
+}
 
 // ============================
-// AUTO LOAD USERS IF TABLE EXISTS
+// UPDATE SENSOR VALUES
 // ============================
+function updateSensors(data) {
+    const humidity = random(data.humidityMin - 5, data.humidityMax + 5);
+    const temperature = random(data.tempMin - 5, data.tempMax + 5);
 
-document.addEventListener("DOMContentLoaded", function () {
-    renderUsers();
-});
+    document.getElementById("humidity").innerText = humidity + "%";
+    document.getElementById("temperature").innerText = temperature + "°C";
+
+    // ventilation auto ON if temp exceeds max
+    const ventilation = temperature > data.tempMax ? "ON" : "OFF";
+    document.getElementById("ventilation").innerText = ventilation;
+
+    // apply warning colors
+    applyWarnings(humidity, temperature, data);
+}
+
+// ============================
+// STOP MONITORING
+// ============================
+function stopMonitoring() {
+    clearInterval(monitorInterval);
+
+    document.getElementById("humidity").innerText = "--%";
+    document.getElementById("temperature").innerText = "--°C";
+    document.getElementById("ventilation").innerText = "--";
+
+    // hide details
+    document.getElementById("details").classList.add("hidden");
+}
+
+// ============================
+// RANDOM NUMBER GENERATOR
+// ============================
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// ============================
+// WARNING COLORS
+// ============================
+function applyWarnings(humidity, temperature, data) {
+    const tempEl = document.getElementById("temperature");
+    const humEl = document.getElementById("humidity");
+
+    tempEl.style.color = (temperature > data.tempMax || temperature < data.tempMin) ? "red" : "lime";
+    humEl.style.color = (humidity > data.humidityMax || humidity < data.humidityMin) ? "red" : "lime";
+}

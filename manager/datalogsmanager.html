@@ -1,44 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Logs</title>
-    <link rel="stylesheet" href="/assets/style.css">
-    <link rel="stylesheet" href="/assets/datalogs.css">
+    <title>GreenGrow · Data Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../manager_assets/datalogs.css">
 </head>
 <body>
 
 <div class="sidebar">
-    <h2 style="color:#fffaee">🌿GreenGrow</h2>
-    <a href="manager.html" class="nav-btn active">Monitoring</a>
-    <a href="datalogsmanager.html" class="nav-btn">Data Logs</a>
+    <div class="logo">
+        🌿 GreenGrow
+        <span>Farm Management</span>
+    </div>
+    <a href="manager.html" class="nav-btn">Monitoring</a>
+    <a href="datalogsmanager.html" class="nav-btn active">Data Logs</a>
     <a href="transportmanager.html" class="nav-btn">Transport Logs</a>
-    <a href="accounts_manager.html" class="nav-btn active">Users</a>
-
-    <div class="user-info">
-        <button onclick="logout()">Logout</button>
+    <a href="accounts_manager.html" class="nav-btn">Users</a>
+    <div class="sidebar-foot">
+        <button class="logout-btn" onclick="logout()">↩ Logout</button>
     </div>
 </div>
 
 <div class="main">
-        <h2>Data Logs</h2>
+    <div class="page-header">
+        <h1>Data Logs</h1>
+        <p>Historical sensor readings per transport</p>
+    </div>
 
-        <div class="filter-section">
+    <div class="panel">
+        <div class="panel-title">Filter</div>
+        <div class="filter-row">
+            <label>Period</label>
             <select id="filter" class="filter-select" onchange="filterLogs()">
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
             </select>
         </div>
+    </div>
 
-        
-        <div class="logs-container">
-            <table class="logs-table">
+    <div class="panel">
+        <div class="panel-title">Records</div>
+        <div class="table-wrap">
+            <table>
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Transport ID</th>
-                        <th>Plant Name</th>
+                        <th>Plant</th>
                         <th>Temperature</th>
                         <th>Humidity</th>
                         <th>Status</th>
@@ -47,26 +58,27 @@
                 <tbody id="logsBody">
                     <tr>
                         <td>2026-02-05</td>
-                        <td>1</td>
+                        <td>TR-001</td>
                         <td>Tomato</td>
-                        <td>26°C</td>
-                        <td>52%</td>
-                        <td class="status-safe">Safe</td>
+                        <td>26 °C</td>
+                        <td>52 %</td>
+                        <td><span class="badge badge-safe">Safe</span></td>
                     </tr>
                     <tr>
                         <td>2026-02-04</td>
-                        <td>2</td>
+                        <td>TR-002</td>
                         <td>Tomato</td>
-                        <td>30°C</td>
-                        <td>60%</td>
-                        <td class="status-warning">Warning</td>
+                        <td>30 °C</td>
+                        <td>60 %</td>
+                        <td><span class="badge badge-warning">Warning</span></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+</div>
 
-</body>
 <script src="datalogs.js"></script>
 <script src="manager.js"></script>
+</body>
 </html>
