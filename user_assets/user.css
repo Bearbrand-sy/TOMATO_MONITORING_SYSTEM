@@ -1,4 +1,4 @@
- *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
             --bg: #f0f7f1;
@@ -263,6 +263,65 @@
         .idle-state p { font-size: .8rem; letter-spacing: .04em; }
 
         .hidden { display: none !important; }
+
+        /* ── DELIVER BUTTON ── */
+        .deliver-wrap {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn-deliver {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1.5px solid var(--green);
+            background: transparent;
+            color: var(--green);
+            font-family: 'DM Mono', monospace;
+            font-size: .78rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            font-weight: 500;
+        }
+        .btn-deliver:hover { background: var(--green); color: #fff; }
+        .btn-deliver:active { transform: scale(.97); }
+        .btn-deliver.done {
+            border-color: var(--border);
+            color: var(--muted);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Delivered state — panel tint */
+        .panel.delivered {
+            background: #f0fbf2;
+            border-color: #a7d9b0;
+            transition: background .4s, border-color .4s;
+        }
+
+        .delivered-stamp {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: .75rem;
+            color: #166534;
+            animation: slideIn .35s ease;
+        }
+        .delivered-stamp.show { display: inline-flex; }
 
         @media (max-width: 700px) {
             .two-col, .card-grid, .details-grid { grid-template-columns: 1fr; }

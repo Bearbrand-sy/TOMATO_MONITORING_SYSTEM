@@ -96,12 +96,19 @@
                 <div class="info-row"><span>Route</span><b id="d-route"></b></div>
                 <div class="info-row"><span>Status</span><b id="d-status"></b></div>
             </div>
+            <div class="deliver-wrap">
+                <button class="btn-deliver" id="deliverBtn" onclick="markDelivered()">
+                    ✓ Mark as Delivered
+                </button>
+                <div class="delivered-stamp" id="deliveredStamp">
+                    ✅ <span id="deliveredTime"></span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    
 function logout() {
     if (confirm("Are you sure you want to logout?")) {
         localStorage.removeItem("loggedUser");
@@ -114,13 +121,18 @@ const transportData = {
     2: { id:"TR-002", product:"Lettuce",  route:"Farm → Cold Storage",  status:"Arrived",    tempMin:10, tempMax:20, humidityMin:60, humidityMax:75 }
 };
 
+// Persist delivered state per transport key within session
+const deliveredLog = {};
+
 let monitorInterval = null;
+let currentKey = null;
 
 function updateTransport() {
     const sel = document.getElementById("transpo").value;
     stopMonitoring();
+    currentKey = sel || null;
     if (!sel) { showIdle(); return; }
-    showMonitor(transportData[sel]);
+    showMonitor(transportData[sel], sel);
     startMonitoring(transportData[sel]);
 }
 
@@ -130,9 +142,10 @@ function showIdle() {
     document.getElementById("details").classList.add("hidden");
     document.getElementById("alertBar").classList.remove("show");
     document.getElementById("liveDot").classList.remove("active");
+    document.querySelector(".panel:last-of-type").classList.remove("delivered");
 }
 
-function showMonitor(data) {
+function showMonitor(data, key) {
     document.getElementById("idleState").classList.add("hidden");
     document.getElementById("cardGrid").classList.remove("hidden");
     document.getElementById("details").classList.remove("hidden");
@@ -140,11 +153,67 @@ function showMonitor(data) {
     document.getElementById("d-id").textContent      = data.id;
     document.getElementById("d-product").textContent = data.product;
     document.getElementById("d-route").textContent   = data.route;
-    const isTransit = data.status === "In Transit";
-    document.getElementById("d-status").innerHTML = `<span class="badge ${isTransit ? 'transit' : 'arrived'}">${data.status}</span>`;
+
+    const isDelivered = !!deliveredLog[key];
+    const statusText  = isDelivered ? "Delivered" : data.status;
+    const badgeClass  = (isDelivered || data.status === "Arrived") ? "arrived" : "transit";
+    document.getElementById("d-status").innerHTML =
+        `<span class="badge ${badgeClass}">${statusText}</span>`;
+
+    // Delivered button & stamp
+    const btn   = document.getElementById("deliverBtn");
+    const stamp = document.getElementById("deliveredStamp");
+    const panel = document.querySelector(".panel:last-of-type");
+
+    if (isDelivered) {
+        btn.textContent = "✓ Delivered";
+        btn.classList.add("done");
+        stamp.querySelector("#deliveredTime").textContent = "Delivered · " + deliveredLog[key];
+        stamp.classList.add("show");
+        panel.classList.add("delivered");
+    } else {
+        btn.textContent = "✓ Mark as Delivered";
+        btn.classList.remove("done");
+        stamp.classList.remove("show");
+        panel.classList.remove("delivered");
+    }
+}
+
+function markDelivered() {
+    if (!currentKey || deliveredLog[currentKey]) return;
+
+    const now = new Date();
+    const ts  = now.toLocaleDateString("en-PH", { month:"short", day:"numeric", year:"numeric" })
+              + " · "
+              + now.toLocaleTimeString("en-PH", { hour:"2-digit", minute:"2-digit" });
+
+    deliveredLog[currentKey] = ts;
+
+    // Update status badge
+    document.getElementById("d-status").innerHTML =
+        `<span class="badge arrived">Delivered</span>`;
+
+    // Update button
+    const btn = document.getElementById("deliverBtn");
+    btn.textContent = "✓ Delivered";
+    btn.classList.add("done");
+
+    // Show timestamp stamp
+    const stamp = document.getElementById("deliveredStamp");
+    stamp.querySelector("#deliveredTime").textContent = "Delivered · " + ts;
+    stamp.classList.add("show");
+
+    // Tint the panel green
+    document.querySelector(".panel:last-of-type").classList.add("delivered");
+
+    // Stop live updates — delivery is final
+    stopMonitoring();
+    document.getElementById("liveDot").classList.remove("active");
 }
 
 function startMonitoring(data) {
+    // Don't restart sensors if already delivered
+    if (currentKey && deliveredLog[currentKey]) return;
     updateSensors(data);
     monitorInterval = setInterval(() => updateSensors(data), 4000);
 }
@@ -156,7 +225,8 @@ function stopMonitoring() {
         el.textContent = "--";
         el.className = "card-value";
     });
-    ["card-humidity","card-temp","card-vent"].forEach(id => document.getElementById(id).classList.remove("ok","warn"));
+    ["card-humidity","card-temp","card-vent"].forEach(id =>
+        document.getElementById(id).classList.remove("ok","warn"));
 }
 
 function updateSensors(data) {
@@ -165,8 +235,8 @@ function updateSensors(data) {
     const ventOn      = temperature > data.tempMax;
     const humOk  = humidity    >= data.humidityMin && humidity    <= data.humidityMax;
     const tempOk = temperature >= data.tempMin     && temperature <= data.tempMax;
-    setCard("card-humidity",  "humidity",    humidity + "%",    humOk,  humOk  ? `Safe range ${data.humidityMin}–${data.humidityMax}%`  : "⚠ Out of range!");
-    setCard("card-temp",      "temperature", temperature + "°C", tempOk, tempOk ? `Safe range ${data.tempMin}–${data.tempMax}°C`        : "⚠ Out of range!");
+    setCard("card-humidity",  "humidity",    humidity + "%",    humOk,  humOk  ? `Safe · ${data.humidityMin}–${data.humidityMax}%`  : "⚠ Out of range!");
+    setCard("card-temp",      "temperature", temperature + "°C", tempOk, tempOk ? `Safe · ${data.tempMin}–${data.tempMax}°C`        : "⚠ Out of range!");
     setCard("card-vent",      "ventilation", ventOn ? "ON" : "OFF", !ventOn, ventOn ? "Auto-triggered" : "Standby");
     document.getElementById("alertBar").classList.toggle("show", !humOk || !tempOk);
 }
