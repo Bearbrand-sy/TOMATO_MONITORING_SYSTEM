@@ -1,107 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitoring Dashboard</title>
-<link rel="stylesheet" href="../assets/style.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenGrow · Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../manager_assets/manager.css">
+    <style>
+        /* ── USER CARD (sidebar) ── */
+        .user-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--green-dim);
+            border: 1.5px solid var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fraunces', serif;
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--green);
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .user-meta { min-width: 0; flex: 1; }
+
+        .user-name {
+            font-size: .78rem;
+            color: var(--text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: .63rem;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .role-admin   { color: #7c3aed; }
+        .role-manager { color: var(--green); }
+        .role-user    { color: var(--muted); }
+    </style>
+</head>
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
-    <h2 style="color:#fffaee">🌿GreenGrow</h2>
+    <div class="logo">
+        🌿 GreenGrow
+        <span>Farm Management</span>
+    </div>
 
     <a href="dashboard.html" class="nav-btn active">Monitoring</a>
     <a href="datalogs.html" class="nav-btn">Data Logs</a>
     <a href="transport.html" class="nav-btn">Transport Logs</a>
     <a href="accounts.html" class="nav-btn">Users</a>
 
-    <div class="user-info">
-        <button onclick="logout()">Logout</button>
+    <div class="sidebar-foot">
+
+        <!-- Logged-in user card -->
+        <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div class="user-meta">
+                <div class="user-name" id="userName">—</div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">↩ Logout</button>
     </div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
+    <div class="page-header">
+        <h1>Monitoring Dashboard</h1>
+        <p>Real-time farm &amp; transport sensor data</p>
+    </div>
 
-<h2>Monitoring Dashboard</h2>
+    <!-- Plant Details + Automation -->
+    <div class="panel">
+        <div class="panel-title">Overview</div>
+        <div class="two-col">
+            <div class="col-block">
+                <h3>Plant Details</h3>
+                <div class="info-row"><span>Crop</span><b>Tomato</b></div>
+                <div class="info-row"><span>Temp Range</span><b>15 – 30 °C</b></div>
+                <div class="info-row"><span>Humidity Range</span><b>50 – 60 %</b></div>
+            </div>
+            <div class="col-block">
+                <h3>Automation</h3>
+                <div class="info-row"><span>Humidity Threshold</span><b>53 %</b></div>
+                <div class="info-row"><span>Temp Limit</span><b>16 °C</b></div>
+                <div class="info-row">
+                    <span>Auto Ventilation</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="section">
+    <!-- Transport Monitoring -->
+    <div class="panel">
+        <div class="panel-title">Transport Monitoring</div>
 
-<div class="two-column">
+        <div class="transport-select-wrap">
+            <label>Vehicle</label>
+            <select id="transpo" onchange="updateTransport()">
+                <option value="">— Select Transport —</option>
+                <option value="1">Transport 1 · TR-001</option>
+                <option value="2">Transport 2 · TR-002</option>
+            </select>
+            <div class="live-dot" id="liveDot"></div>
+        </div>
 
-<div class="column">
-<h3 style="color:#00ad0e;">Plant Details</h3>
-<div class="info-row"><span>Plant:</span><b>Tomato</b></div>
-<div class="info-row"><span>Temp:</span><b>15–30 °C</b></div>
-<div class="info-row"><span>Humidity:</span><b>50–60%</b></div>
+        <!-- Alert bar -->
+        <div class="alert-bar" id="alertBar">
+            ⚠ Sensor values out of safe range — check transport conditions
+        </div>
+
+        <!-- Idle state -->
+        <div class="idle-state" id="idleState">
+            <div class="idle-icon">🚛</div>
+            <p>Select a transport vehicle to begin monitoring</p>
+        </div>
+
+        <!-- Cards -->
+        <div class="card-grid hidden" id="cardGrid">
+            <div class="card" id="card-humidity">
+                <div class="card-icon">💧</div>
+                <div class="card-label">Humidity</div>
+                <span class="card-value" id="humidity">--</span>
+                <div class="card-status" id="hum-status">Waiting…</div>
+            </div>
+            <div class="card" id="card-temp">
+                <div class="card-icon">🌡️</div>
+                <div class="card-label">Temperature</div>
+                <span class="card-value" id="temperature">--</span>
+                <div class="card-status" id="temp-status">Waiting…</div>
+            </div>
+            <div class="card" id="card-vent">
+                <div class="card-icon">💨</div>
+                <div class="card-label">Ventilation</div>
+                <span class="card-value" id="ventilation">--</span>
+                <div class="card-status" id="vent-status">Waiting…</div>
+            </div>
+        </div>
+
+        <!-- Transport Details -->
+        <div id="details" class="hidden">
+            <div class="panel-title" style="margin-top:4px;">Transport Details</div>
+            <div class="details-grid">
+                <div class="info-row"><span>ID</span><b id="d-id"></b></div>
+                <div class="info-row"><span>Product</span><b id="d-product"></b></div>
+                <div class="info-row"><span>Route</span><b id="d-route"></b></div>
+                <div class="info-row"><span>Status</span><b id="d-status"></b></div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="column">
-<h3 style="color:#00ad0e;">Automation</h3>
-<div class="info-row"><span>Humidity Threshold:</span><b>53%</b></div>
-<div class="info-row"><span>Temp Limit:</span><b>16 °C</b></div>
+<script>
+// ============================
+// LOAD LOGGED-IN USER
+// ============================
+(function loadUser() {
+    try {
+        const raw = localStorage.getItem("loggedUser");
+        if (!raw) return;
+        const user = JSON.parse(raw);
 
-<div class="info-row">
-<span>Auto Ventilation:</span>
-<label class="switch">
-<input type="checkbox" checked>
-<span class="slider"></span>
-</label>
-</div>
+        // Avatar: first letter of name
+        document.getElementById("userAvatar").textContent =
+            (user.name || "?").charAt(0).toUpperCase();
 
-</div>
-</div>
-</div>
+        // Name
+        document.getElementById("userName").textContent = user.name || "Unknown";
 
-<div class="section">
+        // Role with colour
+        const roleEl = document.getElementById("userRole");
+        const role   = (user.role || "").toLowerCase();
+        roleEl.textContent  = user.role || "";
+        roleEl.className    = "user-role role-" + role;
 
-<h3>Monitoring Transport</h3>
+    } catch (e) { /* silently ignore parse errors */ }
+})();
 
-<select id="transpo" class="transpo" onchange="updateTransport()">
-<option value="">Select Transport</option>
-<option value="1">Transport 1</option>
-<option value="2">Transport 2</option>
-</select>
+// ============================
+// LOGOUT
+// ============================
+function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("loggedUser");
+        window.location.href = "../index.html";
+    }
+}
 
-<div class="card-grid" id="monitorContainer">
+// ============================
+// TRANSPORT DATA
+// ============================
+const transportData = {
+    1: { id: "TR-001", product: "Tomatoes", route: "Farm → Davao Market", status: "In Transit", tempMin: 15, tempMax: 30, humidityMin: 50, humidityMax: 60 },
+    2: { id: "TR-002", product: "Lettuce",  route: "Farm → Cold Storage", status: "Arrived",    tempMin: 10, tempMax: 20, humidityMin: 60, humidityMax: 75 }
+};
 
-<div class="card">
-<div class="icon">💧</div>
-<p>Humidity</p>
-<span id="humidity">--%</span>
-</div>
+let monitorInterval = null;
+let currentData = null;
 
-<div class="card">
-<div class="icon">🌡️</div>
-<p>Temperature</p>
-<span id="temperature">--°C</span>
-</div>
+function updateTransport() {
+    const selected = document.getElementById("transpo").value;
+    stopMonitoring();
+    if (!selected) { showIdle(); return; }
+    currentData = transportData[selected];
+    showMonitor(currentData);
+    startMonitoring(currentData);
+}
 
-<div class="card">
-<div class="icon">💨</div>
-<p>Ventilation</p>
-<span id="ventilation">--</span>
-</div>
+function showIdle() {
+    document.getElementById("idleState").classList.remove("hidden");
+    document.getElementById("cardGrid").classList.add("hidden");
+    document.getElementById("details").classList.add("hidden");
+    document.getElementById("alertBar").classList.remove("show");
+    document.getElementById("liveDot").classList.remove("active");
+}
 
-</div>
+function showMonitor(data) {
+    document.getElementById("idleState").classList.add("hidden");
+    document.getElementById("cardGrid").classList.remove("hidden");
+    document.getElementById("details").classList.remove("hidden");
+    document.getElementById("liveDot").classList.add("active");
+    document.getElementById("d-id").textContent      = data.id;
+    document.getElementById("d-product").textContent = data.product;
+    document.getElementById("d-route").textContent   = data.route;
+    const isTransit = data.status === "In Transit";
+    document.getElementById("d-status").innerHTML =
+        `<span class="badge ${isTransit ? 'transit' : 'arrived'}">${data.status}</span>`;
+}
 
-<div class="section hidden" id="details">
+function startMonitoring(data) {
+    updateSensors(data);
+    monitorInterval = setInterval(() => updateSensors(data), 4000);
+}
 
-<h3>Transport Details</h3>
+function stopMonitoring() {
+    if (monitorInterval) { clearInterval(monitorInterval); monitorInterval = null; }
+    document.getElementById("humidity").textContent    = "--";
+    document.getElementById("temperature").textContent = "--";
+    document.getElementById("ventilation").textContent = "--";
+    ["card-humidity","card-temp","card-vent"].forEach(id =>
+        document.getElementById(id).classList.remove("ok","warn"));
+    ["humidity","temperature","ventilation"].forEach(id =>
+        document.getElementById(id).className = "card-value");
+}
 
-<div class="info-row"><span>ID:</span><b id="d-id"></b></div>
-<div class="info-row"><span>Product:</span><b id="d-product"></b></div>
-<div class="info-row"><span>Route:</span><b id="d-route"></b></div>
-<div class="info-row"><span>Status:</span><b id="d-status"></b></div>
+function updateSensors(data) {
+    const humidity    = random(data.humidityMin - 6, data.humidityMax + 6);
+    const temperature = random(data.tempMin - 5,    data.tempMax + 5);
+    const ventOn      = temperature > data.tempMax;
+    const humOk  = humidity    >= data.humidityMin && humidity    <= data.humidityMax;
+    const tempOk = temperature >= data.tempMin     && temperature <= data.tempMax;
+    setCard("card-humidity",  "humidity",    humidity + "%",     humOk,  humOk  ? `Safe range ${data.humidityMin}–${data.humidityMax}%` : "⚠ Out of range!");
+    setCard("card-temp",      "temperature", temperature + "°C", tempOk, tempOk ? `Safe range ${data.tempMin}–${data.tempMax}°C`        : "⚠ Out of range!");
+    setCard("card-vent",      "ventilation", ventOn ? "ON" : "OFF", !ventOn, ventOn ? "Auto-triggered" : "Standby");
+    document.getElementById("alertBar").classList.toggle("show", !humOk || !tempOk);
+}
 
-</div>
+function setCard(cardId, valueId, value, isOk, statusText) {
+    const card  = document.getElementById(cardId);
+    const valEl = document.getElementById(valueId);
+    card.classList.remove("ok","warn");
+    card.classList.add(isOk ? "ok" : "warn");
+    valEl.textContent = value;
+    valEl.className   = "card-value " + (isOk ? "ok" : "warn");
+    const s = card.querySelector(".card-status");
+    if (s) s.textContent = statusText;
+}
 
-</div>
-
-</div>
-
-<script src="dashboard.js"></script>
-
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+</script>
 </body>
 </html>

@@ -1,83 +1,179 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Accounts</title>
-<link rel="stylesheet" href="../assets/style.css">
-<link rel="stylesheet" href="../assets/account.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenGrow · Users</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/account.css">
+        <style>
+        /* ── USER CARD (sidebar) ── */
+        .user-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--green-dim);
+            border: 1.5px solid var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fraunces', serif;
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--green);
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .user-meta { min-width: 0; flex: 1; }
+
+        .user-name {
+            font-size: .78rem;
+            color: var(--text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: .63rem;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .role-admin   { color: #7c3aed; }
+        .role-manager { color: var(--green); }
+        .role-user    { color: var(--muted); }
+    </style>
+</head>
 <body>
 
 <div class="sidebar">
-<h2 style="color:#fffaee">🌿GreenGrow</h2>
-
-<a href="dashboard.html" class="nav-btn">Monitoring</a>
-<a href="datalogs.html" class="nav-btn">Data Logs</a>
-<a href="transport.html" class="nav-btn">Transport Logs</a>
-<a href="account.html" class="nav-btn active">Users</a>
-
-<div class="user-info">
-<button onclick="logout()">Logout</button>
-</div>
+    <div class="logo">
+        🌿 GreenGrow
+        <span>Farm Management</span>
+    </div>
+    <a href="dashboard.html" class="nav-btn">Monitoring</a>
+    <a href="datalogs.html" class="nav-btn">Data Logs</a>
+    <a href="transport.html" class="nav-btn">Transport Logs</a>
+    <a href="accounts.html" class="nav-btn active">Users</a>
+    <div class="sidebar-foot">
+        <!-- Logged-in user card -->
+        <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div class="user-meta">
+                <div class="user-name" id="userName">—</div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">↩ Logout</button>
+    </div>
 </div>
 
 <div class="main">
+    <div class="page-header">
+        <h1>User Management</h1>
+        <p>Manage accounts and roles</p>
+    </div>
 
-<h2>User Management</h2>
+    <!-- Add User -->
+    <div class="panel">
+        <div class="panel-title">Add User</div>
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Full Name</label>
+                <input type="text" id="name" placeholder="Name Surname">
+            </div>
+            <div class="form-field">
+                <label>Email</label>
+                <input type="text" id="email" placeholder="name@email.com">
+            </div>
+            <div class="form-field">
+                <label>Contact Number</label>
+                <input type="text" id="contact" placeholder="09xxxxxxxxx">
+            </div>
+            <div class="form-field">
+                <label>Role</label>
+                <select id="role">
+                    <option value="Admin">Admin</option>
+                    <option value="User">User</option>
+                    <option value="Manager">Manager</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="addUser()">+ Add User</button>
+    </div>
 
-<div class="section">
-
-<h3>Add User</h3>
-
-<input type="text" id="name" placeholder="Full Name">
-<input type="text" id="email" placeholder="Email">
-<input type="text" id="contact" placeholder="Contact Number">
-
-<select id="role">
-<option value="User">User</option>
-<option value="Manager">Manager</option>
-<option value="Admin">Admin</option>
-</select>
-
-<button onclick="addUser()">Add User</button>
-
+    <!-- User Table -->
+    <div class="panel">
+        <div class="panel-title">Accounts</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-
-<div class="section">
-
-<h3>User Accounts</h3>
-
-<table class="user-table">
-
-<thead>
-<tr>
-<th>#</th>
-<th>Name</th>
-<th>Email</th>
-<th>Contact</th>
-<th>Role</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="userTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<script src="dashboard.js"></script>
-
+<script src="../manager/account_manager.js"></script>
+<script src="manager.js"></script>
 <script>
-renderUsers();
-</script>
+function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("loggedUser");
+        window.location.href = "../index.html";
+    }
+}
+if (typeof renderUsers === 'function') renderUsers();
 
+
+// ============================
+// LOAD LOGGED-IN USER
+// ============================
+(function loadUser() {
+    try {
+        const raw = localStorage.getItem("loggedUser");
+        if (!raw) return;
+        const user = JSON.parse(raw);
+
+        // Avatar: first letter of name
+        document.getElementById("userAvatar").textContent =
+            (user.name || "?").charAt(0).toUpperCase();
+
+        // Name
+        document.getElementById("userName").textContent = user.name || "Unknown";
+
+        // Role with colour
+        const roleEl = document.getElementById("userRole");
+        const role   = (user.role || "").toLowerCase();
+        roleEl.textContent  = user.role || "";
+        roleEl.className    = "user-role role-" + role;
+
+    } catch (e) { /* silently ignore parse errors */ }
+})();
+
+</script>
 </body>
 </html>
-```

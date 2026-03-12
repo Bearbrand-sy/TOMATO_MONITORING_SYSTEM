@@ -1,85 +1,263 @@
-input, select {
-    padding: 10px;
-    margin: 6px 4px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+        :root {
+            --bg: #f0f7f1;
+            --surface: #ffffff;
+            --surface2: #edf7ee;
+            --border: #d0e8d2;
+            --green: #1a9e3f;
+            --green-dim: #22c55e18;
+            --green-glow: #22c55e28;
+            --amber: #d97706;
+            --red: #dc2626;
+            --text: #14271a;
+            --muted: #6b8f72;
+            --sidebar-w: 220px;
+        }
 
-/* =========================
-   ADD USER BUTTON
-========================= */
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-.add-btn {
-    background-color: #00ad0e;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    margin-top: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s;
-}
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: #e8f5ea;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 28px 16px;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--green);
+            letter-spacing: -0.02em;
+            padding: 0 8px 28px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .logo span { color: var(--muted); font-size: .85rem; display: block; font-weight: 300; margin-top: 2px; }
 
-.add-btn:hover {
-    background-color: #008f0c;
-}
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--muted);
+            font-size: .78rem;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            transition: all .2s;
+            margin-bottom: 4px;
+        }
+        .nav-btn::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: background .2s;
+            flex-shrink: 0;
+        }
+        .nav-btn:hover { color: var(--text); background: var(--surface2); }
+        .nav-btn:hover::before { background: var(--muted); }
+        .nav-btn.active { color: var(--green); background: var(--green-dim); }
+        .nav-btn.active::before { background: var(--green); box-shadow: 0 0 6px var(--green); }
 
+        .sidebar-foot {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .logout-btn {
+            width: 100%;
+            padding: 9px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: .75rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .logout-btn:hover { border-color: var(--red); color: var(--red); }
 
-/* =========================
-   DELETE BUTTON
-========================= */
+        /* ── MAIN ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 36px 40px;
+        }
 
-.delete-btn {
-    background-color: #ff3b3b;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-}
+        .page-header { margin-bottom: 28px; }
+        .page-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: -.02em;
+            color: var(--text);
+        }
+        .page-header p {
+            color: var(--muted);
+            font-size: .78rem;
+            margin-top: 4px;
+            letter-spacing: .04em;
+        }
 
-.delete-btn:hover {
-    background-color: #d62828;
-}
+        /* ── PANEL ── */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px #0d271514;
+        }
+        .panel-title {
+            font-size: .7rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
 
+        /* ── ADD USER FORM ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
 
-/* =========================
-   USER TABLE
-========================= */
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-.user-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
+        .form-field label {
+            font-size: .68rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
 
-.user-table th {
-    background: #00ad0e;
-    color: white;
-    padding: 10px;
-}
+        .form-field input,
+        .form-field select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: .82rem;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .form-field input:focus,
+        .form-field select:focus { border-color: var(--green); }
+        .form-field input::placeholder { color: var(--muted); }
 
-.user-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
+        .btn-primary {
+            padding: 10px 22px;
+            border-radius: 8px;
+            border: none;
+            background: var(--green);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: .78rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity .2s, transform .1s;
+        }
+        .btn-primary:hover { opacity: .88; }
+        .btn-primary:active { transform: scale(.97); }
 
-.user-table tr:hover {
-    background-color: #f5f5f5;
-}
+        /* ── TABLE ── */
+        .table-wrap { overflow-x: auto; }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .8rem;
+        }
+        thead tr { border-bottom: 2px solid var(--border); }
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: .68rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--surface2); }
+        td {
+            padding: 11px 14px;
+            color: var(--text);
+            vertical-align: middle;
+        }
 
-/* =========================
-   ROLE BADGES
-========================= */
+        /* ── ROLE BADGE ── */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .68rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .badge-manager { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .badge-user    { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
 
-.role-badge {
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: bold;
-}
+        /* ── ACTION BUTTONS ── */
+        .btn-action {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: .7rem;
+            cursor: pointer;
+            transition: all .2s;
+            margin-right: 4px;
+        }
+        .btn-action:hover { border-color: var(--green); color: var(--green); }
+        .btn-action.danger:hover { border-color: var(--red); color: var(--red); }
+
+        @media (max-width: 700px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .main { padding: 24px 16px; }
+        }
