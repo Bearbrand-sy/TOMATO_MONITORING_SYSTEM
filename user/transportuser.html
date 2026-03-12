@@ -2,96 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Transport Logs</title>
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="stylesheet" href="../assets/transport.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenGrow · Transport Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../user_assets/transport.css">
 </head>
 <body>
 
 <div class="sidebar">
-    <h2 style="color:#fffaee">🌿GreenGrow</h2>
-    <a href="user.html" class="nav-btn active">Monitoring</a>
-
-    <a href="transportuser.html" class="nav-btn">Transport Logs</a>
-
-    <div class="user-info">
-        <button onclick="logout()">Logout</button>
+    <div class="logo">🌿 GreenGrow<span>Farm Management</span></div>
+    <a href="user.html" class="nav-btn">Monitoring</a>
+    <a href="transportuser.html" class="nav-btn active">Transport Logs</a>
+    <div class="sidebar-foot">
+        <button class="logout-btn" onclick="logout()">↩ Logout</button>
     </div>
-
 </div>
 
 <div class="main">
-    <h2>Transport Logs</h2>
-    <div class="filter-section">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="filterTransport()">
-        
-        <select id="timeFilter" class="filter-select" onchange="filterTransport()">
-            <option value="all">All Time</option>
-            <option value="daily">Today</option>
-            <option value="weekly">This Week</option>
-            <option value="monthly">This Month</option>
-        </select>
-
-        <select id="statusFilter" class="filter-select" onchange="filterTransport()">
-            <option value="all">All Status</option>
-            <option value="delivered">Delivered</option>
-            <option value="in-transit">In Transit</option>
-        </select>
+    <div class="page-header">
+        <h1>Transport Logs</h1>
+        <p>Track shipment history and sensor data</p>
     </div>
 
+    <div class="panel">
+        <div class="panel-title">Filter</div>
+        <div class="filter-row">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search transport, plant, route…" onkeyup="filterTransport()">
+            <select id="timeFilter" class="filter-select" onchange="filterTransport()">
+                <option value="all">All Time</option>
+                <option value="daily">Today</option>
+                <option value="weekly">This Week</option>
+                <option value="monthly">This Month</option>
+            </select>
+            <select id="statusFilter" class="filter-select" onchange="filterTransport()">
+                <option value="all">All Status</option>
+                <option value="delivered">Delivered</option>
+                <option value="in-transit">In Transit</option>
+            </select>
+        </div>
+    </div>
 
-    <div class="logs-container">
-        <table class="logs-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Transport ID</th>
-                    <th>Plant Name</th>
-                    <th>Origin</th>
-                    <th>Destination</th>
-                    <th>Temperature</th>
-                    <th>Humidity</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="transportBody">
-                <tr data-date="2026-02-05" data-status="delivered">
-                    <td>2026-02-05</td>
-                    <td>TR-001</td>
-                    <td>Tomato</td>
-                    <td>Manolo Farm</td>
-                    <td>CDO Market</td>
-                    <td>26°C</td>
-                    <td>52%</td>
-                    <td><span class="status-delivered">Delivered</span></td>
-                    <td><button class="view-btn" onclick="viewDetails('TR-001')">View</button></td>
-                </tr>
-                <tr data-date="2026-02-05" data-status="in-transit">
-                    <td>2026-02-05</td>
-                    <td>TR-002</td>
-                    <td>Tomato</td>
-                    <td>Manolo Farm</td>
-                    <td>Davao Market</td>
-                    <td>30°C</td>
-                    <td>60%</td>
-                    <td><span class="status-transit">In Transit</span></td>
-                    <td><button class="view-btn" onclick="viewDetails('TR-002')">View</button></td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="panel">
+        <div class="panel-title">Records</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transport ID</th>
+                        <th>Plant</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Temp</th>
+                        <th>Humidity</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="transportBody">
+                    <tr data-date="2026-02-05" data-status="delivered">
+                        <td>2026-02-05</td><td>TR-001</td><td>Tomato</td><td>Manolo Farm</td><td>CDO Market</td><td>26 °C</td><td>52 %</td>
+                        <td><span class="badge badge-delivered">Delivered</span></td>
+                        <td><button class="btn-view" onclick="viewDetails('TR-001')">View</button></td>
+                    </tr>
+                    <tr data-date="2026-02-05" data-status="in-transit">
+                        <td>2026-02-05</td><td>TR-002</td><td>Tomato</td><td>Manolo Farm</td><td>Davao Market</td><td>30 °C</td><td>60 %</td>
+                        <td><span class="badge badge-transit">In Transit</span></td>
+                        <td><button class="btn-view" onclick="viewDetails('TR-002')">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <div id="detailsModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h3>Transport Details</h3>
+        <div class="modal-header">
+            <h3>Transport Details</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
         <div id="modalBody"></div>
     </div>
 </div>
-</div>
 
+<script src="transport.js"></script>
+<script>
+function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("loggedUser");
+        window.location.href = "../index.html";
+    }
+}
+
+function closeModal() { document.getElementById('detailsModal').classList.remove('open'); }
+function openModal()  { document.getElementById('detailsModal').classList.add('open'); }
+document.getElementById('detailsModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+</script>
 </body>
- <script src="transport.js"> </script>
 </html>
