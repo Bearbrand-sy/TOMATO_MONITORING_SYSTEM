@@ -1,11 +1,11 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>User Accounts</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="account.css">
 </head>
 
@@ -14,10 +14,10 @@
 <div class="sidebar">
 <h2 style="color:#fffaee">🌿GreenGrow</h2>
 
-<a href="manager.html" class="nav-btn">Monitoring</a>
-<a href="datalogsmanager.html" class="nav-btn">Data Logs</a>
-<a href="transportmanager.html" class="nav-btn">Transport Logs</a>
-<a href="accounts_manager.html" class="nav-btn active">Users</a>
+<a href="dashboard.html" class="nav-btn">Monitoring</a>
+<a href="datalogs.html" class="nav-btn">Data Logs</a>
+<a href="transport.html" class="nav-btn">Transport Logs</a>
+<a href="account.html" class="nav-btn active">Users</a>
 
 <div class="user-info">
 <button onclick="logout()">Logout</button>
@@ -39,6 +39,7 @@
 <select id="role">
 <option value="User">User</option>
 <option value="Manager">Manager</option>
+<option value="Admin">Admin</option>
 </select>
 
 <button onclick="addUser()">Add User</button>
@@ -71,7 +72,7 @@
 
 </div>
 
-<script src="account_manager.js"></script>
+<script src="dashboard.js"></script>
 
 <script>
 renderUsers();

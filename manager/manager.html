@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Users - GreenGrow</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Monitoring Dashboard</title>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
 
 <div class="sidebar">
     <h2 style="color:#fffaee">🌿GreenGrow</h2>
-    <a href="user.html" class="nav-btn">Monitoring</a>
-    <a href="transportuser.html" class="nav-btn">Transport Logs</a>
-    
+    <a href="manager.html" class="nav-btn">Monitoring</a>
+    <a href="datalogsmanager.html" class="nav-btn">Data Logs</a>
+    <a href="transportmanager.html" class="nav-btn">Transport Logs</a>
+    <a href="accounts_manager.html" class="nav-btn active">Users</a>
 
     <div class="user-info">
         <button onclick="logout()">Logout</button>
@@ -74,10 +75,7 @@
 
 </div>
 
-<script>
-    function logout() {
-        window.location.href = "index.html";
-    }
-</script>
+<script src="manager.js"></script>
+<script src="users.js"></script>
 </body>
 </html>
