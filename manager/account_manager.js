@@ -1,6 +1,6 @@
 let users = [
-    { name: "Sander", email: "admin", contact: "+63 900 000 0005", role: "Admin" },
-    { name: "Manager User", email: "manager", contact: "+63 900 000 0002", role: "Manager" },
+    { name: "Sander Perejan", email: "admin", contact: "+63 900 000 0005", role: "Admin" },
+    { name: "Pauline Coming", email: "manager", contact: "+63 900 000 0002", role: "Manager" },
     { name: "Regular User", email: "user@email.com", contact: "+63 900 000 0003", role: "User" }
 ];
 
