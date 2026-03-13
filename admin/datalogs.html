@@ -1,141 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenGrow · Data Logs</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../manager_assets/datalogs.css">
-        <style>
-        /* ── USER CARD (sidebar) ── */
-        .user-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .user-avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--green-dim);
-            border: 1.5px solid var(--green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Fraunces', serif;
-            font-size: .95rem;
-            font-weight: 600;
-            color: var(--green);
-            flex-shrink: 0;
-            text-transform: uppercase;
-        }
+<title>GreenGrow · Data Logs</title>
 
-        .user-meta { min-width: 0; flex: 1; }
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../manager_assets/datalogs.css">
 
-        .user-name {
-            font-size: .78rem;
-            color: var(--text);
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        .user-role {
-            font-size: .63rem;
-            letter-spacing: .07em;
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-        .role-admin   { color: #7c3aed; }
-        .role-manager { color: var(--green); }
-        .role-user    { color: var(--muted); }
-    </style>
 </head>
+
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
-    <div class="logo">
-        🌿 GreenGrow
-        <span>Farm Management</span>
-    </div>
-    <a href="dashboard.html" class="nav-btn">Monitoring</a>
-    <a href="datalogs.html" class="nav-btn active">Data Logs</a>
-    <a href="transport.html" class="nav-btn">Transport Logs</a>
-    <a href="accounts.html" class="nav-btn">Users</a>
-    <div class="sidebar-foot">
-        <!-- Logged-in user card -->
-        <div class="user-card" id="userCard">
-            <div class="user-avatar" id="userAvatar">?</div>
-            <div class="user-meta">
-                <div class="user-name" id="userName">—</div>
-                <div class="user-role" id="userRole"></div>
-            </div>
-        </div>
-        <button class="logout-btn" onclick="logout()">↩ Logout</button>
-    </div>
+
+<div class="logo">
+🌿 GreenGrow
+<span>Farm Management</span>
 </div>
 
+<a href="dashboard.html" class="nav-btn">Monitoring</a>
+<a href="datalogs.html" class="nav-btn active">Data Logs</a>
+<a href="transport.html" class="nav-btn">Transport Logs</a>
+<a href="accounts.html" class="nav-btn">Users</a>
+
+<div class="sidebar-foot">
+
+<div class="user-card" id="userCard">
+<div class="user-avatar" id="userAvatar">?</div>
+
+<div class="user-meta">
+<div class="user-name" id="userName">—</div>
+<div class="user-role" id="userRole"></div>
+</div>
+
+</div>
+
+<button class="logout-btn" onclick="logout()">↩ Logout</button>
+
+</div>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
 <div class="main">
-    <div class="page-header">
-        <h1>Data Logs</h1>
-        <p>Historical sensor readings per transport</p>
-    </div>
 
-    <div class="panel">
-        <div class="panel-title">Filter</div>
-        <div class="filter-row">
-            <label>Period</label>
-            <select id="filter" class="filter-select" onchange="filterLogs()">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="panel">
-        <div class="panel-title">Records</div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Transport ID</th>
-                        <th>Plant</th>
-                        <th>Temperature</th>
-                        <th>Humidity</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="logsBody">
-                    <tr>
-                        <td>2026-02-05</td>
-                        <td>TR-001</td>
-                        <td>Tomato</td>
-                        <td>26 °C</td>
-                        <td>52 %</td>
-                        <td><span class="badge badge-safe">Safe</span></td>
-                    </tr>
-                    <tr>
-                        <td>2026-02-04</td>
-                        <td>TR-002</td>
-                        <td>Tomato</td>
-                        <td>30 °C</td>
-                        <td>60 %</td>
-                        <td><span class="badge badge-warning">Warning</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="page-header">
+<h1>Data Logs</h1>
+<p>Historical sensor readings per transport</p>
 </div>
+
+
+<!-- TABLE + PIE CHART SIDE BY SIDE -->
+<div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+
+<!-- RECORDS TABLE -->
+<div class="panel" style="flex:2; min-width:500px;">
+
+<div class="panel-title">Records</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Transport ID</th>
+<th>Plant</th>
+<th>Temperature</th>
+<th>Humidity</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="logsBody">
+
+<tr>
+<td>2026-02-05</td>
+<td>TR-001</td>
+<td>Tomato</td>
+<td>26 °C</td>
+<td>52 %</td>
+<td>Safe</td>
+</tr>
+
+<tr>
+<td>2026-02-04</td>
+<td>TR-002</td>
+<td>Tomato</td>
+<td>30 °C</td>
+<td>60 %</td>
+<td>Warning</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- PIE CHART -->
+<div class="panel" style="flex:1; min-width:260px; text-align:center;">
+
+<div class="panel-title">Transport Status</div>
+
+<canvas id="logsChart" style="max-width:220px; margin:auto;"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
 
 <script src="datalogs.js"></script>
 <script src="manager.js"></script>

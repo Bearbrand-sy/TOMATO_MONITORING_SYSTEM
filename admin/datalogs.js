@@ -1,37 +1,54 @@
-function logout() {
-    if (confirm("Are you sure you want to logout?")) {
-        localStorage.removeItem("loggedUser");
-        window.location.href = "../index.html";
-    }
+document.addEventListener("DOMContentLoaded", function () {
+
+const rows = document.querySelectorAll("#logsBody tr");
+
+let safe = 0;
+let warning = 0;
+
+rows.forEach(row => {
+
+const status = row.cells[5].innerText;
+
+if(status === "Safe"){
+safe++;
 }
-function filterLogs() {
-        const filter = document.getElementById("timeFilter").value;
-            alert("Filter set to: " + filter);
-          
-        }
 
+if(status === "Warning"){
+warning++;
+}
 
-// ============================
-// LOAD LOGGED-IN USER
-// ============================
-(function loadUser() {
-    try {
-        const raw = localStorage.getItem("loggedUser");
-        if (!raw) return;
-        const user = JSON.parse(raw);
+});
 
-        // Avatar: first letter of name
-        document.getElementById("userAvatar").textContent =
-            (user.name || "?").charAt(0).toUpperCase();
+const ctx = document.getElementById("logsChart");
 
-        // Name
-        document.getElementById("userName").textContent = user.name || "Unknown";
+new Chart(ctx, {
 
-        // Role with colour
-        const roleEl = document.getElementById("userRole");
-        const role   = (user.role || "").toLowerCase();
-        roleEl.textContent  = user.role || "";
-        roleEl.className    = "user-role role-" + role;
+type: "pie",
 
-    } catch (e) { /* silently ignore parse errors */ }
-})();
+data: {
+labels: ["Safe", "Warning"],
+
+datasets: [{
+data: [safe, warning],
+
+backgroundColor: [
+"#4CAF50",
+"#FF9800"
+]
+}]
+},
+
+options: {
+responsive: true,
+
+plugins: {
+legend: {
+position: "bottom"
+}
+}
+
+}
+
+});
+
+});
