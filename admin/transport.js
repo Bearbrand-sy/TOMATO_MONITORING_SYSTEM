@@ -1,141 +1,92 @@
-function logout() {
-    if (confirm("Are you sure you want to logout?")) {
-        localStorage.removeItem("loggedUser");
-        window.location.href = "../index.html";
+// ============================
+// LOAD LOGGED-IN USER
+// ============================
+
+(function loadUser() {
+    try {
+        const raw = localStorage.getItem("loggedUser");
+        if (!raw) return;
+
+        const user = JSON.parse(raw);
+
+        // Avatar
+        document.getElementById("userAvatar").textContent =
+            (user.name || "?").charAt(0).toUpperCase();
+
+        // Name
+        document.getElementById("userName").textContent = user.name || "Unknown";
+
+        // Role
+        const roleEl = document.getElementById("userRole");
+        const role = (user.role || "").toLowerCase();
+
+        roleEl.textContent = user.role || "";
+        roleEl.className = "user-role role-" + role;
+
+    } catch (e) {
+        console.error("User load error:", e);
     }
+})();
+
+
+// ============================
+// LOGOUT
+// ============================
+
+function logout(){
+
+if(confirm("Are you sure you want to logout?")){
+
+localStorage.removeItem("loggedUser");
+
+window.location.href="../index.html";
+
 }
 
-function filterTransport() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const timeFilter = document.getElementById('timeFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    const table = document.getElementById('transportBody');
-    const rows = table.getElementsByTagName('tr');
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const text = row.textContent.toLowerCase();
-        const dateStr = row.getAttribute('data-date');
-        const status = row.getAttribute('data-status');
-        
-        const matchesSearch = text.includes(searchInput);
-        
-        let matchesTime = true;
-        if (timeFilter !== 'all' && dateStr) {
-            const rowDate = new Date(dateStr);
-            rowDate.setHours(0, 0, 0, 0);
-            
-            const diffTime = today - rowDate;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (timeFilter === 'daily') {
-                matchesTime = diffDays === 0;
-            } else if (timeFilter === 'weekly') {
-                matchesTime = diffDays <= 7;
-            } else if (timeFilter === 'monthly') {
-                matchesTime = diffDays <= 30;
-            }
-        }
-        
-        const matchesStatus = statusFilter === 'all' || status === statusFilter;
-        if (matchesSearch && matchesTime && matchesStatus) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    }
 }
 
-function viewDetails(transportId) {
-    const modal = document.getElementById('detailsModal');
-    const modalBody = document.getElementById('modalBody');
-    
-    const details = {
-        'TR-001': {
-            id: 'TR-001',
-            date: '2026-02-05',
-            plant: 'Tomato',
-            origin: 'Manolo Farm',
-            destination: 'CDO Market',
-            temperature: '26°C',
-            humidity: '52%',
-            status: 'Delivered',
-            driver: 'Juan Dela Cruz',
-            vehicle: 'Truck-101'
-        },
-        'TR-002': {
-            id: 'TR-002',
-            date: '2026-02-05',
-            plant: 'Tomato',
-            origin: 'Manolo Farm',
-            destination: 'Davao Market',
-            temperature: '30°C',
-            humidity: '60%',
-            status: 'In Transit',
-            driver: 'Pedro Santos',
-            vehicle: 'Truck-205'
-        }
-    };
-    
-    const data = details[transportId] || details['TR-001'];
-    
-    modalBody.innerHTML = `
-        <div class="detail-row">
-            <span class="detail-label">Transport ID:</span>
-            <span class="detail-value">${data.id}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Date:</span>
-            <span class="detail-value">${data.date}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Plant Name:</span>
-            <span class="detail-value">${data.plant}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Origin:</span>
-            <span class="detail-value">${data.origin}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Destination:</span>
-            <span class="detail-value">${data.destination}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Temperature:</span>
-            <span class="detail-value">${data.temperature}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Humidity:</span>
-            <span class="detail-value">${data.humidity}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Status:</span>
-            <span class="detail-value"><span class="status-${data.status.toLowerCase().replace(' ', '-')}">${data.status}</span></span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Driver:</span>
-            <span class="detail-value">${data.driver}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Vehicle:</span>
-            <span class="detail-value">${data.vehicle}</span>
-        </div>
-    `;
-    
-    modal.style.display = 'block';
+
+
+// Manolo Fortich → CDO Market
+const start = [8.3697, 124.8647]; // Manolo Fortich Farm
+const end = [8.4822, 124.6475];   // CDO Market
+
+const map = L.map('map').setView(start, 10);
+
+
+// MAP TILES
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+
+attribution:'© OpenStreetMap'
+
+}).addTo(map);
+
+
+// MARKERS
+
+L.marker(start).addTo(map).bindPopup("Manolo Farm");
+
+L.marker(end).addTo(map).bindPopup("CDO Market");
+
+
+// ROUTE LINE
+
+fetch(`https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+const route=data.routes[0].geometry;
+
+L.geoJSON(route,{
+
+style:{
+color:"#22c55e",
+weight:5
 }
 
-function closeModal() {
-    document.getElementById('detailsModal').style.display = 'none';
-}
+}).addTo(map);
 
-window.onclick = function(event) {
-    const modal = document.getElementById('detailsModal');
-    if (event.target === modal) {
-        closeModal();
-    }
-}
-
+});
