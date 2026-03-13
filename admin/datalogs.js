@@ -33,7 +33,7 @@ data: [safe, warning],
 
 backgroundColor: [
 "#4CAF50",
-"#FF9800"
+"#ff0000"
 ]
 }]
 },
