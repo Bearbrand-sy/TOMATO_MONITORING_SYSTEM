@@ -6,6 +6,126 @@
     <title>GreenGrow · Monitoring</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../user_assets/user.css">
+    <style>
+        /* ── TRANSPORT LAYOUT: cards left, detail right ── */
+        .transport-layout {
+            display: grid;
+            grid-template-columns: 1fr 600px;
+            gap: 16px;
+            align-items: start;
+        }
+
+        /* left column — scrollable card list */
+        .transport-card-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .transport-card-col::-webkit-scrollbar { width: 4px; }
+        .transport-card-col::-webkit-scrollbar-track { background: transparent; }
+        .transport-card-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .transport-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+            flex-shrink: 0;
+        }
+        .transport-card:hover {
+            border-color: var(--green);
+            box-shadow: 0 2px 14px var(--green-glow);
+        }
+        .transport-card.selected {
+            border-color: var(--green);
+            background: #f0fbf2;
+            box-shadow: 0 2px 16px #22c55e20;
+        }
+
+        .tc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .tc-id { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+        .tc-badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: .63rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 500; }
+        .tc-badge.transit { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .tc-badge.arrived { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .tc-badge.pending { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+        .tc-product { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .tc-route   { font-size: .72rem; color: var(--muted); margin-bottom: 12px; }
+
+        .tc-sensors { display: flex; gap: 8px; }
+        .tc-sensor  { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; text-align: center; }
+        .tc-sensor-label { font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+        .tc-sensor-value { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 300; color: var(--text); }
+        .tc-sensor-value.ok   { color: var(--green); }
+        .tc-sensor-value.warn { color: var(--red); }
+
+        /* right column — sticky detail panel */
+        .detail-panel {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            position: sticky;
+            top: 20px;
+            display: none;
+            animation: slideIn .25s ease;
+        }
+        .detail-panel.show { display: block; }
+        @keyframes slideIn { from { opacity:0; transform:translateX(8px); } to { opacity:1; transform:translateX(0); } }
+
+        /* idle placeholder in right column */
+        .detail-idle {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px 18px;
+            text-align: center;
+            color: var(--muted);
+            position: sticky;
+            top: 20px;
+        }
+        .detail-idle .idle-icon { font-size: 2rem; opacity: .3; margin-bottom: 10px; }
+        .detail-idle p { font-size: .75rem; letter-spacing: .04em; }
+
+        .detail-col-title { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .detail-col-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* ── LINE GRAPH ── */
+        .graph-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 14px 10px; margin-top: 14px; }
+        .graph-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .graph-title  { font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+        .graph-legend { display: flex; gap: 10px; font-size: .62rem; color: var(--muted); }
+        .graph-legend span { display: flex; align-items: center; gap: 4px; }
+        .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        canvas#sensorChart { width: 100% !important; height: 130px !important; display: block; }
+
+        .live-pip { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+        .live-pip.active { background: var(--green); box-shadow: 0 0 0 3px var(--green-glow); animation: pip-pulse 1.8s infinite; }
+        @keyframes pip-pulse { 0%,100% { box-shadow: 0 0 0 3px var(--green-glow); } 50% { box-shadow: 0 0 0 6px transparent; } }
+
+        /* ── ALERT BAR ── */
+        .alert-bar { display: none; align-items: center; gap: 10px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px 16px; font-size: .78rem; color: #b91c1c; margin-bottom: 14px; }
+        .alert-bar.show { display: flex; }
+
+        .hidden { display: none !important; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; }
+        .badge.transit { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge.arrived { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: .78rem; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row span { color: var(--muted); }
+        .info-row b { color: var(--text); font-weight: 500; }
+
+        @media (max-width: 800px) {
+            .transport-layout { grid-template-columns: 1fr; }
+            .detail-panel, .detail-idle { position: static; }
+        }
+    </style>
 </head>
 <body>
 
@@ -13,8 +133,8 @@
     <div class="logo">🌿 GreenGrow<span>Farm Management</span></div>
     <a href="user.html" class="nav-btn active">Monitoring</a>
     <a href="transportuser.html" class="nav-btn">Transport Logs</a>
+
     <div class="sidebar-foot">
-        <!-- Logged-in user card -->
         <div class="user-card" id="userCard">
             <div class="user-avatar" id="userAvatar">?</div>
             <div class="user-meta">
@@ -56,67 +176,71 @@
 
     <!-- Transport Monitoring -->
     <div class="panel">
-        <div class="panel-title">Transport Monitoring</div>
-
-        <div class="transport-select-wrap">
-            <label>Vehicle</label>
-            <select id="transpo" onchange="updateTransport()">
-                <option value="">— Select Transport —</option>
-                <option value="1">Transport 1 · TR-001</option>
-                <option value="2">Transport 2 · TR-002</option>
-            </select>
-            <div class="live-dot" id="liveDot"></div>
+        <div class="panel-title">
+            Transport Monitoring
+            <span id="globalLivePip" class="live-pip"></span>
         </div>
 
         <div class="alert-bar" id="alertBar">⚠ Sensor values out of safe range — check transport conditions</div>
 
-        <div class="idle-state" id="idleState">
-            <div class="idle-icon">🚛</div>
-            <p>Select a transport vehicle to begin monitoring</p>
-        </div>
+        <div class="transport-layout">
 
-        <div class="card-grid hidden" id="cardGrid">
-            <div class="card" id="card-humidity">
-                <div class="card-icon">💧</div>
-                <div class="card-label">Humidity</div>
-                <span class="card-value" id="humidity">--</span>
-                <div class="card-status" id="hum-status">Waiting…</div>
-            </div>
-            <div class="card" id="card-temp">
-                <div class="card-icon">🌡️</div>
-                <div class="card-label">Temperature</div>
-                <span class="card-value" id="temperature">--</span>
-                <div class="card-status" id="temp-status">Waiting…</div>
-            </div>
-            <div class="card" id="card-vent">
-                <div class="card-icon">💨</div>
-                <div class="card-label">Ventilation</div>
-                <span class="card-value" id="ventilation">--</span>
-                <div class="card-status" id="vent-status">Waiting…</div>
-            </div>
-        </div>
+            <!-- LEFT: scrollable delivery cards -->
+            <div class="transport-card-col" id="transportCards"></div>
 
-        <div id="details" class="hidden">
-            <div class="panel-title" style="margin-top:4px;">Transport Details</div>
-            <div class="details-grid">
+            <!-- RIGHT: detail panel or idle placeholder -->
+            <div class="detail-panel" id="detailPanel">
+                <!-- Line graph -->
+                <div class="graph-wrap" style="margin-bottom: 1rem;">
+                    <div class="graph-header">
+                        <span class="graph-title">Sensor History</span>
+                        <div class="graph-legend">
+                            <span><span class="legend-dot" style="background:#1a9e3f"></span>Temp</span>
+                            <span><span class="legend-dot" style="background:#3b82f6"></span>Humidity</span>
+                        </div>
+                    </div>
+                    <canvas id="sensorChart"></canvas>
+                </div>
+                <div class="detail-col-title">Transport Details</div>
                 <div class="info-row"><span>ID</span><b id="d-id"></b></div>
                 <div class="info-row"><span>Product</span><b id="d-product"></b></div>
                 <div class="info-row"><span>Route</span><b id="d-route"></b></div>
                 <div class="info-row"><span>Status</span><b id="d-status"></b></div>
+                <div class="info-row"><span>Driver</span><b id="d-driver"></b></div>
+                <div class="info-row"><span>Quantity</span><b id="d-quantity"></b></div>
+
+                <div class="detail-col-title" style="margin-top:14px;">Live Sensors</div>
+                <div class="info-row"><span>Temperature</span><b id="d-temp">--</b></div>
+                <div class="info-row"><span>Humidity</span><b id="d-humidity">--</b></div>
+                <div class="info-row"><span>Ventilation</span><b id="d-vent">--</b></div>
+                <div class="info-row"><span>Temp Range</span><b id="d-temprange"></b></div>
+                <div class="info-row"><span>Humidity Range</span><b id="d-humrange"></b></div>
+
+                
             </div>
-            <div class="deliver-wrap">
-                <button class="btn-deliver" id="deliverBtn" onclick="markDelivered()">
-                    ✓ Mark as Delivered
-                </button>
-                <div class="delivered-stamp" id="deliveredStamp">
-                    ✅ <span id="deliveredTime"></span>
-                </div>
+
+            <div class="detail-idle" id="detailIdle">
+                <div class="idle-icon">📋</div>
+                <p>Select a delivery card to view live sensor data</p>
             </div>
+
         </div>
     </div>
 </div>
 
 <script>
+// ── USER ────────────────────────────────────────────
+(function() {
+    try {
+        const u = JSON.parse(localStorage.getItem("loggedUser") || "{}");
+        document.getElementById("userAvatar").textContent = (u.name||"?").charAt(0).toUpperCase();
+        document.getElementById("userName").textContent   = u.name || "Unknown";
+        const r = document.getElementById("userRole");
+        r.textContent = u.role || "";
+        r.className   = "user-role role-" + (u.role||"").toLowerCase();
+    } catch(e) {}
+})();
+
 function logout() {
     if (confirm("Are you sure you want to logout?")) {
         localStorage.removeItem("loggedUser");
@@ -124,168 +248,188 @@ function logout() {
     }
 }
 
-const transportData = {
-    1: { id:"TR-001", product:"Tomatoes", route:"Farm → Davao Market",  status:"In Transit", tempMin:15, tempMax:30, humidityMin:50, humidityMax:60 },
-    2: { id:"TR-002", product:"Lettuce",  route:"Farm → Cold Storage",  status:"Arrived",    tempMin:10, tempMax:20, humidityMin:60, humidityMax:75 }
-};
+// ── TRANSPORT DATA ──────────────────────────────────
+const builtIn = [
+    { id:"TR-001", product:"Tomatoes", route:"Farm → Davao Market",  status:"In Transit", driver:"Pedro Santos", quantity:"15 crates", tempMin:15, tempMax:30, humidityMin:50, humidityMax:60 },
+    { id:"TR-002", product:"Tomatoes", route:"Farm → CDO Market",    status:"Arrived",    driver:"Juan Reyes",   quantity:"22 crates", tempMin:15, tempMax:30, humidityMin:50, humidityMax:60 },
+    { id:"TR-003", product:"Tomatoes", route:"Farm → Butuan Market", status:"In Transit", driver:"Mario Cruz",   quantity:"18 crates", tempMin:15, tempMax:30, humidityMin:50, humidityMax:60 },
+];
 
-// Persist delivered state per transport key within session
-const deliveredLog = {};
-
-let monitorInterval = null;
-let currentKey = null;
-
-function updateTransport() {
-    const sel = document.getElementById("transpo").value;
-    stopMonitoring();
-    currentKey = sel || null;
-    if (!sel) { showIdle(); return; }
-    showMonitor(transportData[sel], sel);
-    startMonitoring(transportData[sel]);
+function buildList() {
+    const saved = JSON.parse(localStorage.getItem("gg_deliveries") || "[]");
+    return [...builtIn, ...saved.map(d => ({
+        id: d.id, product: d.product || "Tomato",
+        route: (d.origin||"Farm") + " → " + (d.destination||"Market"),
+        status: d.status || "Pending",
+        driver: d.driver || "—",
+        quantity: d.quantity ? d.quantity + " crates" : "—",
+        tempMin:15, tempMax:30, humidityMin:50, humidityMax:60,
+    }))];
 }
 
-function showIdle() {
-    document.getElementById("idleState").classList.remove("hidden");
-    document.getElementById("cardGrid").classList.add("hidden");
-    document.getElementById("details").classList.add("hidden");
-    document.getElementById("alertBar").classList.remove("show");
-    document.getElementById("liveDot").classList.remove("active");
-    document.querySelector(".panel:last-of-type").classList.remove("delivered");
-}
+let list = buildList();
+let selectedIdx = null;
+let interval    = null;
+let chart       = null;
+const maxPts    = 20;
+let tHistory    = [];
+let hHistory    = [];
 
-function showMonitor(data, key) {
-    document.getElementById("idleState").classList.add("hidden");
-    document.getElementById("cardGrid").classList.remove("hidden");
-    document.getElementById("details").classList.remove("hidden");
-    document.getElementById("liveDot").classList.add("active");
-    document.getElementById("d-id").textContent      = data.id;
-    document.getElementById("d-product").textContent = data.product;
-    document.getElementById("d-route").textContent   = data.route;
-
-    const isDelivered = !!deliveredLog[key];
-    const statusText  = isDelivered ? "Delivered" : data.status;
-    const badgeClass  = (isDelivered || data.status === "Arrived") ? "arrived" : "transit";
-    document.getElementById("d-status").innerHTML =
-        `<span class="badge ${badgeClass}">${statusText}</span>`;
-
-    // Delivered button & stamp
-    const btn   = document.getElementById("deliverBtn");
-    const stamp = document.getElementById("deliveredStamp");
-    const panel = document.querySelector(".panel:last-of-type");
-
-    if (isDelivered) {
-        btn.textContent = "✓ Delivered";
-        btn.classList.add("done");
-        stamp.querySelector("#deliveredTime").textContent = "Delivered · " + deliveredLog[key];
-        stamp.classList.add("show");
-        panel.classList.add("delivered");
-    } else {
-        btn.textContent = "✓ Mark as Delivered";
-        btn.classList.remove("done");
-        stamp.classList.remove("show");
-        panel.classList.remove("delivered");
-    }
-}
-
-function markDelivered() {
-    if (!currentKey || deliveredLog[currentKey]) return;
-
-    const now = new Date();
-    const ts  = now.toLocaleDateString("en-PH", { month:"short", day:"numeric", year:"numeric" })
-              + " · "
-              + now.toLocaleTimeString("en-PH", { hour:"2-digit", minute:"2-digit" });
-
-    deliveredLog[currentKey] = ts;
-
-    // Update status badge
-    document.getElementById("d-status").innerHTML =
-        `<span class="badge arrived">Delivered</span>`;
-
-    // Update button
-    const btn = document.getElementById("deliverBtn");
-    btn.textContent = "✓ Delivered";
-    btn.classList.add("done");
-
-    // Show timestamp stamp
-    const stamp = document.getElementById("deliveredStamp");
-    stamp.querySelector("#deliveredTime").textContent = "Delivered · " + ts;
-    stamp.classList.add("show");
-
-    // Tint the panel green
-    document.querySelector(".panel:last-of-type").classList.add("delivered");
-
-    // Stop live updates — delivery is final
-    stopMonitoring();
-    document.getElementById("liveDot").classList.remove("active");
-}
-
-function startMonitoring(data) {
-    // Don't restart sensors if already delivered
-    if (currentKey && deliveredLog[currentKey]) return;
-    updateSensors(data);
-    monitorInterval = setInterval(() => updateSensors(data), 4000);
-}
-
-function stopMonitoring() {
-    if (monitorInterval) { clearInterval(monitorInterval); monitorInterval = null; }
-    ["humidity","temperature","ventilation"].forEach(id => {
-        const el = document.getElementById(id);
-        el.textContent = "--";
-        el.className = "card-value";
+// ── RENDER CARDS ────────────────────────────────────
+function renderCards() {
+    const c = document.getElementById("transportCards");
+    c.innerHTML = "";
+    list.forEach((t, i) => {
+        const isSel = selectedIdx === i;
+        const sc    = t.status === "In Transit" ? "transit" : t.status === "Arrived" ? "arrived" : "pending";
+        const div   = document.createElement("div");
+        div.className = "transport-card" + (isSel ? " selected" : "");
+        div.onclick   = () => selectCard(i);
+        div.innerHTML = `
+            <div class="tc-header">
+                <span class="tc-id">${t.id} <span class="live-pip${isSel ? " active" : ""}"></span></span>
+                <span class="tc-badge ${sc}">${t.status}</span>
+            </div>
+            <div class="tc-product">🍅 ${t.product}</div>
+            <div class="tc-route">${t.route}</div>
+            <div class="tc-sensors">
+                <div class="tc-sensor"><div class="tc-sensor-label">Temp</div><div class="tc-sensor-value" id="ct-${i}">--°C</div></div>
+                <div class="tc-sensor"><div class="tc-sensor-label">Humidity</div><div class="tc-sensor-value" id="ch-${i}">--%</div></div>
+                <div class="tc-sensor"><div class="tc-sensor-label">Vent</div><div class="tc-sensor-value" id="cv-${i}">--</div></div>
+            </div>`;
+        c.appendChild(div);
     });
-    ["card-humidity","card-temp","card-vent"].forEach(id =>
-        document.getElementById(id).classList.remove("ok","warn"));
 }
 
-function updateSensors(data) {
-    const humidity    = random(data.humidityMin - 6, data.humidityMax + 6);
-    const temperature = random(data.tempMin - 5,    data.tempMax + 5);
-    const ventOn      = temperature > data.tempMax;
-    const humOk  = humidity    >= data.humidityMin && humidity    <= data.humidityMax;
-    const tempOk = temperature >= data.tempMin     && temperature <= data.tempMax;
-    setCard("card-humidity",  "humidity",    humidity + "%",    humOk,  humOk  ? `Safe · ${data.humidityMin}–${data.humidityMax}%`  : "⚠ Out of range!");
-    setCard("card-temp",      "temperature", temperature + "°C", tempOk, tempOk ? `Safe · ${data.tempMin}–${data.tempMax}°C`        : "⚠ Out of range!");
-    setCard("card-vent",      "ventilation", ventOn ? "ON" : "OFF", !ventOn, ventOn ? "Auto-triggered" : "Standby");
-    document.getElementById("alertBar").classList.toggle("show", !humOk || !tempOk);
+// ── SELECT ──────────────────────────────────────────
+function selectCard(i) {
+    if (selectedIdx === i) {
+        selectedIdx = null;
+        stopMonitor();
+        document.getElementById("detailPanel").classList.remove("show");
+        document.getElementById("detailIdle").style.display = "block";
+        document.getElementById("alertBar").classList.remove("show");
+        document.getElementById("globalLivePip").classList.remove("active");
+        renderCards(); return;
+    }
+    stopMonitor();
+    selectedIdx = i;
+    tHistory = []; hHistory = [];
+    const t = list[i];
+    document.getElementById("d-id").textContent       = t.id;
+    document.getElementById("d-product").textContent  = t.product;
+    document.getElementById("d-route").textContent    = t.route;
+    document.getElementById("d-driver").textContent   = t.driver;
+    document.getElementById("d-quantity").textContent = t.quantity;
+    document.getElementById("d-temprange").textContent = t.tempMin + " – " + t.tempMax + " °C";
+    document.getElementById("d-humrange").textContent  = t.humidityMin + " – " + t.humidityMax + " %";
+    const isTr = t.status === "In Transit";
+    document.getElementById("d-status").innerHTML = `<span class="badge ${isTr?"transit":"arrived"}">${t.status}</span>`;
+    document.getElementById("detailPanel").classList.add("show");
+    document.getElementById("detailIdle").style.display = "none";
+    document.getElementById("globalLivePip").classList.add("active");
+    renderCards();
+    initChart();
+    startMonitor(t, i);
 }
 
-function setCard(cardId, valueId, value, isOk, statusText) {
-    const card  = document.getElementById(cardId);
-    const valEl = document.getElementById(valueId);
-    card.classList.remove("ok","warn");
-    card.classList.add(isOk ? "ok" : "warn");
-    valEl.textContent = value;
-    valEl.className   = "card-value " + (isOk ? "ok" : "warn");
-    const s = card.querySelector(".card-status");
-    if (s) s.textContent = statusText;
+// ── MONITOR ─────────────────────────────────────────
+function startMonitor(t, i) {
+    tick(t, i);
+    interval = setInterval(() => tick(t, i), 3000);
 }
 
-function random(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function stopMonitor() {
+    if (interval) { clearInterval(interval); interval = null; }
+}
 
-// ============================
-// LOAD LOGGED-IN USER
-// ============================
-(function loadUser() {
-    try {
-        const raw = localStorage.getItem("loggedUser");
-        if (!raw) return;
-        const user = JSON.parse(raw);
+function tick(t, i) {
+    const temp   = rnd(t.tempMin - 5, t.tempMax + 5);
+    const hum    = rnd(t.humidityMin - 6, t.humidityMax + 6);
+    const ventOn = temp > t.tempMax;
+    const tOk    = temp >= t.tempMin && temp <= t.tempMax;
+    const hOk    = hum  >= t.humidityMin && hum <= t.humidityMax;
 
-        // Avatar: first letter of name
-        document.getElementById("userAvatar").textContent =
-            (user.name || "?").charAt(0).toUpperCase();
+    const sv = (id, val, ok) => { const e = document.getElementById(id); if(e){e.textContent=val; e.className="tc-sensor-value "+(ok?"ok":"warn");} };
+    sv("ct-"+i, temp+"°C", tOk);
+    sv("ch-"+i, hum+"%",   hOk);
+    const ve = document.getElementById("cv-"+i);
+    if(ve){ ve.textContent = ventOn?"ON":"OFF"; ve.className = "tc-sensor-value "+(ventOn?"warn":"ok"); }
 
-        // Name
-        document.getElementById("userName").textContent = user.name || "Unknown";
+    const ok  = s => `<b style="color:var(--green)">${s}</b>`;
+    const bad = s => `<b style="color:var(--red)">${s}</b>`;
+    document.getElementById("d-temp").innerHTML    = tOk ? ok(temp+" °C") : bad(temp+" °C");
+    document.getElementById("d-humidity").innerHTML= hOk ? ok(hum+" %")   : bad(hum+" %");
+    document.getElementById("d-vent").innerHTML    = ventOn ? bad("ON") : ok("OFF");
+    document.getElementById("alertBar").classList.toggle("show", !tOk || !hOk);
 
-        // Role with colour
-        const roleEl = document.getElementById("userRole");
-        const role   = (user.role || "").toLowerCase();
-        roleEl.textContent  = user.role || "";
-        roleEl.className    = "user-role role-" + role;
+    tHistory.push(temp); hHistory.push(hum);
+    if (tHistory.length > maxPts) { tHistory.shift(); hHistory.shift(); }
+    drawChart();
+}
 
-    } catch (e) { /* silently ignore parse errors */ }
-})();
+function rnd(a, b) { return Math.floor(Math.random()*(b-a+1))+a; }
+
+// ── CHART ───────────────────────────────────────────
+function initChart() {
+    const c = document.getElementById("sensorChart");
+    c.getContext("2d").clearRect(0,0,c.width,c.height);
+    chart = true;
+}
+
+function drawChart() {
+    const canvas = document.getElementById("sensorChart");
+    const ctx    = canvas.getContext("2d");
+    const W      = canvas.offsetWidth || 600;
+    const H      = 160;
+    canvas.width = W; canvas.height = H;
+
+    const pad = {t:12, r:16, b:28, l:36};
+    const iW  = W - pad.l - pad.r;
+    const iH  = H - pad.t - pad.b;
+
+    ctx.fillStyle = "#edf7ee";
+    ctx.fillRect(0,0,W,H);
+
+    const all  = [...tHistory,...hHistory,0,100];
+    const minV = Math.max(0,   Math.min(...all)-5);
+    const maxV = Math.min(100, Math.max(...all)+5);
+    const rng  = maxV - minV || 1;
+    const n    = Math.max(tHistory.length, 2);
+    const xp   = i => pad.l + (i/(n-1))*iW;
+    const yp   = v => pad.t + iH - ((v-minV)/rng)*iH;
+
+    // grid
+    ctx.strokeStyle = "#d0e8d2"; ctx.lineWidth = 1;
+    for (let g=0; g<=4; g++) {
+        const y = pad.t+(g/4)*iH;
+        ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+        ctx.fillStyle="#6b8f72"; ctx.font="10px DM Mono,monospace"; ctx.textAlign="right";
+        ctx.fillText(Math.round(maxV-(g/4)*rng), pad.l-4, y+4);
+    }
+
+    function line(data, color, fill) {
+        if (data.length < 2) return;
+        ctx.beginPath();
+        data.forEach((v,i) => i===0 ? ctx.moveTo(xp(i),yp(v)) : ctx.lineTo(xp(i),yp(v)));
+        ctx.strokeStyle=color; ctx.lineWidth=2; ctx.lineJoin="round"; ctx.stroke();
+        ctx.lineTo(xp(data.length-1), pad.t+iH);
+        ctx.lineTo(xp(0), pad.t+iH); ctx.closePath();
+        ctx.fillStyle=fill; ctx.fill();
+        const lx=xp(data.length-1), ly=yp(data[data.length-1]);
+        ctx.beginPath(); ctx.arc(lx,ly,4,0,Math.PI*2);
+        ctx.fillStyle=color; ctx.fill();
+    }
+
+    line(hHistory, "#3b82f6", "rgba(59,130,246,0.08)");
+    line(tHistory, "#1a9e3f", "rgba(26,158,63,0.10)");
+
+    ctx.fillStyle="#6b8f72"; ctx.font="9px DM Mono,monospace"; ctx.textAlign="center";
+    const step = Math.max(1, Math.floor(n/5));
+    for (let i=0; i<n; i+=step) ctx.fillText("t-"+(n-1-i), xp(i), H-pad.b+14);
+}
+
+renderCards();
 </script>
 </body>
 </html>
