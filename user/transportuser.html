@@ -1,251 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenGrow · Transport Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../manager_assets/manager.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        .main { max-width: 100%; padding: 36px 32px; }
 
-<title>GreenGrow · Transport Logs</title>
+        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-bar input,
+        .filter-bar select {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px;
+            font-family: 'DM Mono', monospace; font-size: .78rem;
+            color: var(--text); outline: none; transition: border-color .2s;
+        }
+        .filter-bar input:focus, .filter-bar select:focus { border-color: var(--green); }
+        .filter-bar input::placeholder { color: var(--muted); }
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:wght@300;600&display=swap" rel="stylesheet">
+        /* side-by-side: narrow table | wide map */
+        .content-row {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
 
-<link rel="stylesheet" href="../manager_assets/transport.css">
+        .logs-side .panel,
+        .map-side  .panel {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-<!-- MAP -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        /* compact table */
+        .table-wrap { overflow-y: auto; flex: 1; padding: 0 4px 6px; }
+        .table-wrap::-webkit-scrollbar { width: 3px; }
+        .table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-<style>
+        table { width: 100%; border-collapse: collapse; font-size: .7rem; }
+        thead tr { border-bottom: 2px solid var(--border); }
+        th { text-align: left; padding: 6px 8px; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+        tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background .15s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--surface2); }
+        tbody tr.active-row { background: #f0fbf2; box-shadow: inset 3px 0 0 var(--green); }
+        td { padding: 7px 8px; color: var(--text); vertical-align: middle; line-height: 1.3; }
 
-/* FILTER PANEL */
+        .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: .58rem; letter-spacing: .05em; text-transform: uppercase; font-weight: 500; white-space: nowrap; }
+        .badge-delivered { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .badge-transit   { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge-delayed   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 
-.filter-panel{
-margin-top:20px;
-margin-bottom:20px;
-}
+        /* map panel */
+        .map-side .panel { padding: 0; }
+        .map-panel-header {
+            padding: 14px 18px;
+            font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--muted); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .map-route-label { font-size: .78rem; color: var(--text); font-weight: 500; letter-spacing: 0; text-transform: none; }
 
-.filter-bar{
-display:flex;
-gap:12px;
-flex-wrap:wrap;
-margin-top:10px;
-}
+        #map { flex: 1; width: 80%; min-height: 0; display: none; }
 
-.filter-bar input{
-padding:8px 12px;
-border:1px solid #c8d8c8;
-border-radius:8px;
-font-family:'DM Mono', monospace;
-font-size:12px;
-background:#f3f6f3;
-}
+        .map-idle {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: var(--muted); gap: 10px;
+        }
+        .map-idle .idle-icon { font-size: 2.6rem; opacity: .28; }
+        .map-idle p { font-size: .8rem; letter-spacing: .04em; }
 
-.filter-bar select{
-padding:8px 12px;
-border:1px solid #c8d8c8;
-border-radius:8px;
-font-family:'DM Mono', monospace;
-font-size:12px;
-background:#f3f6f3;
-cursor:pointer;
-}
+        .route-info {
+            padding: 10px 18px; background: var(--surface2);
+            border-top: 1px solid var(--border);
+            display: none; gap: 18px; flex-shrink: 0; flex-wrap: wrap;
+        }
+        .route-info.show { display: flex; }
+        .route-chip { font-size: .72rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+        .route-chip b { color: var(--text); font-weight: 500; }
 
-
-/* DASHBOARD + MAP LAYOUT */
-
-.content-row{
-display:grid;
-grid-template-columns:2fr 3fr;
-gap:20px;
-align-items:stretch;
-}
-
-/* PANELS */
-
-.logs-side .panel,
-.map-side .panel{
-height:520px;
-display:flex;
-flex-direction:column;
-}
-
-/* TABLE */
-
-.table-wrap{
-overflow-y:auto;
-flex:1;
-}
-
-/* MAP */
-
-#map{
-width:100%;
-height:100%;
-border-radius:10px;
-border:1px solid #ddd;
-}
-
-</style>
-
+        @media (max-width: 900px) {
+            .content-row { grid-template-columns: 1fr; }
+            .logs-side .panel, .map-side .panel { height: 420px; }
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
-
 <div class="sidebar">
-
-<div class="logo">
-🌿 GreenGrow
-<span>Farm Management</span>
+    <div class="logo">🌿 GreenGrow<span>Farm Management</span></div>
+    <a href="user.html" class="nav-btn">Monitoring</a>
+    <a href="transportuser.html" class="nav-btn active">Transport Logs</a>
+    <div class="sidebar-foot">
+        <div class="user-card">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div class="user-meta">
+                <div class="user-name" id="userName">—</div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">↩ Logout</button>
+    </div>
 </div>
-
-<a href="user.html" class="nav-btn">Monitoring</a>
-<a href="transportuser.html" class="nav-btn active">Transport Logs</a>
-
-
-<div class="sidebar-foot">
-
-<div class="user-card">
-
-<div class="user-avatar" id="userAvatar">?</div>
-
-<div class="user-meta">
-<div class="user-name" id="userName">—</div>
-<div class="user-role" id="userRole"></div>
-</div>
-
-</div>
-
-<button class="logout-btn" onclick="logout()">↩ Logout</button>
-
-</div>
-
-</div>
-
-
-<!-- MAIN CONTENT -->
 
 <div class="main">
+    <div class="page-header">
+        <h1>Transport Logs</h1>
+        <p>Track shipment history and sensor data</p>
+    </div>
 
-<div class="page-header">
-<h1>Transport Logs</h1>
-<p>Track shipment history and sensor data</p>
+    <!-- FILTER -->
+    <div class="panel" style="margin-bottom:16px; padding:18px 20px;">
+        <div class="panel-title">Filter</div>
+        <div class="filter-bar">
+            <input type="text" placeholder="Search transport, plant…" id="searchInput" oninput="filterRows()">
+            <select id="statusFilter" onchange="filterRows()">
+                <option value="all">All Status</option>
+                <option value="Delivered">Delivered</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Delayed">Delayed</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- CONTENT ROW -->
+    <div class="content-row">
+
+        <!-- LEFT: compact records -->
+        <div class="logs-side">
+            <div class="panel">
+                <div class="panel-title" style="padding:14px 14px 10px; flex-shrink:0;">Records</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Route</th>
+                                <th>Temp</th>
+                                <th>Hum</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transportBody">
+                            <tr data-id="TR-001" data-origin="Manolo Farm" data-dest="CDO Market"
+                                data-olat="8.3697" data-olng="124.8647"
+                                data-dlat="8.4822" data-dlng="124.6475"
+                                data-status="Delivered" data-temp="26°C" data-hum="52%" data-plant="Tomato"
+                                onclick="selectRow(this)">
+                                <td>TR-001</td>
+                                <td class="route-cell">Manolo → CDO</td>
+                                <td>26°C</td><td>52%</td>
+                                <td><span class="badge badge-delivered">Delivered</span></td>
+                            </tr>
+                            <tr data-id="TR-002" data-origin="Manolo Farm" data-dest="Davao Market"
+                                data-olat="8.3697" data-olng="124.8647"
+                                data-dlat="7.0907" data-dlng="125.4378"
+                                data-status="In Transit" data-temp="30°C" data-hum="60%" data-plant="Tomato"
+                                onclick="selectRow(this)">
+                                <td>TR-002</td>
+                                <td class="route-cell">Manolo → Davao</td>
+                                <td>30°C</td><td>60%</td>
+                                <td><span class="badge badge-transit">In Transit</span></td>
+                            </tr>
+                            <tr data-id="TR-003" data-origin="Manolo Farm" data-dest="Butuan Market"
+                                data-olat="8.3697" data-olng="124.8647"
+                                data-dlat="8.9481" data-dlng="125.5436"
+                                data-status="In Transit" data-temp="24°C" data-hum="55%" data-plant="Tomato"
+                                onclick="selectRow(this)">
+                                <td>TR-003</td>
+                                <td class="route-cell">Manolo → Butuan</td>
+                                <td>24°C</td><td>55%</td>
+                                <td><span class="badge badge-transit">In Transit</span></td>
+                            </tr>
+                            <tr data-id="TR-004" data-origin="Manolo Farm" data-dest="Iligan Market"
+                                data-olat="8.3697" data-olng="124.8647"
+                                data-dlat="8.2280" data-dlng="124.2452"
+                                data-status="Delivered" data-temp="22°C" data-hum="54%" data-plant="Tomato"
+                                onclick="selectRow(this)">
+                                <td>TR-004</td>
+                                <td class="route-cell">Manolo → Iligan</td>
+                                <td>22°C</td><td>54%</td>
+                                <td><span class="badge badge-delivered">Delivered</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: large map -->
+        <div class="map-side">
+            <div class="panel">
+                <div class="map-panel-header">
+                    <span>Transport Route Map</span>
+                    <span class="map-route-label" id="mapRouteLabel">Select a record →</span>
+                </div>
+
+                <div class="map-idle" id="mapIdle">
+                    <div class="idle-icon">🗺️</div>
+                    <p>Click a transport record to view its route</p>
+                </div>
+
+                <div id="map"></div>
+
+                <div class="route-info" id="routeInfo">
+                
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
+<script>
+// ── USER ────────────────────────────────────────────
+(function() {
+    try {
+        const u = JSON.parse(localStorage.getItem("loggedUser") || "{}");
+        document.getElementById("userAvatar").textContent = (u.name||"?").charAt(0).toUpperCase();
+        document.getElementById("userName").textContent   = u.name || "—";
+        const r = document.getElementById("userRole");
+        r.textContent = u.role || "";
+        r.className   = "user-role role-" + (u.role||"").toLowerCase();
+    } catch(e) {}
+})();
 
-<!-- FILTER PANEL (FULL WIDTH) -->
+function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("loggedUser");
+        window.location.href = "../index.html";
+    }
+}
 
-<div class="panel filter-panel">
+// ── MAP ─────────────────────────────────────────────
+let mapInstance = null;
+let routeLayer  = null;
+let activeRow   = null;
 
-<div class="panel-title">Filter</div>
+const greenIcon = L.divIcon({
+    className: "",
+    html: `<div style="width:13px;height:13px;background:#1a9e3f;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #22c55e44;"></div>`,
+    iconSize: [13,13], iconAnchor: [6,6]
+});
+const redIcon = L.divIcon({
+    className: "",
+    html: `<div style="width:13px;height:13px;background:#dc2626;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #dc262644;"></div>`,
+    iconSize: [13,13], iconAnchor: [6,6]
+});
 
-<div class="filter-bar">
+function selectRow(row) {
+    if (activeRow) activeRow.classList.remove("active-row");
+    activeRow = row;
+    row.classList.add("active-row");
 
-<input type="text" placeholder="Search transport, plant..." id="searchInput">
+    const oLat = parseFloat(row.dataset.olat), oLng = parseFloat(row.dataset.olng);
+    const dLat = parseFloat(row.dataset.dlat), dLng = parseFloat(row.dataset.dlng);
 
-<select id="timeFilter">
-<option>All Time</option>
-<option>Today</option>
-<option>This Week</option>
-<option>This Month</option>
-</select>
+    document.getElementById("mapIdle").style.display = "none";
+    document.getElementById("map").style.display     = "block";
+    document.getElementById("routeInfo").classList.add("show");
+    document.getElementById("mapRouteLabel").textContent = row.dataset.origin + " → " + row.dataset.dest;
+    document.getElementById("ri-id").textContent    = row.dataset.id;
+    document.getElementById("ri-plant").textContent = row.dataset.plant;
+    document.getElementById("ri-temp").textContent  = row.dataset.temp;
+    document.getElementById("ri-hum").textContent   = row.dataset.hum;
+    document.getElementById("ri-route").textContent = row.dataset.origin + " → " + row.dataset.dest;
 
-<select id="statusFilter">
-<option>All Status</option>
-<option>Delivered</option>
-<option>In Transit</option>
-<option>Delayed</option>
-</select>
+    if (!mapInstance) {
+        mapInstance = L.map("map").setView([oLat, oLng], 9);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap"
+        }).addTo(mapInstance);
+    } else {
+        // remove old markers + route
+        mapInstance.eachLayer(l => {
+            if (l instanceof L.Marker || l instanceof L.GeoJSON || l instanceof L.Polyline) {
+                if (!(l instanceof L.TileLayer)) mapInstance.removeLayer(l);
+            }
+        });
+        if (routeLayer) { mapInstance.removeLayer(routeLayer); routeLayer = null; }
+    }
 
-</div>
+    L.marker([oLat, oLng], { icon: greenIcon }).addTo(mapInstance)
+        .bindPopup(`<b>🌾 ${row.dataset.origin}</b><br><small>Origin</small>`);
+    L.marker([dLat, dLng], { icon: redIcon }).addTo(mapInstance)
+        .bindPopup(`<b>🏪 ${row.dataset.dest}</b><br><small>Destination</small>`);
 
-</div>
+    fetch(`https://router.project-osrm.org/route/v1/driving/${oLng},${oLat};${dLng},${dLat}?overview=full&geometries=geojson`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.routes?.[0]) return;
+            routeLayer = L.geoJSON(data.routes[0].geometry, {
+                style: { color: "#1a9e3f", weight: 4, opacity: .9 }
+            }).addTo(mapInstance);
+            mapInstance.fitBounds(routeLayer.getBounds(), { padding: [36, 36] });
+            mapInstance.invalidateSize();
+        })
+        .catch(() => {
+            routeLayer = L.polyline([[oLat, oLng],[dLat, dLng]], {
+                color: "#1a9e3f", weight: 4, dashArray: "8 6"
+            }).addTo(mapInstance);
+            mapInstance.fitBounds(routeLayer.getBounds(), { padding: [36, 36] });
+        });
 
+    setTimeout(() => mapInstance && mapInstance.invalidateSize(), 120);
+}
 
-<!-- CONTENT ROW -->
-
-<div class="content-row">
-
-<!-- LEFT TABLE -->
-
-<div class="logs-side">
-
-<div class="panel">
-
-<div class="panel-title">Transport Records</div>
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Transport ID</th>
-<th>Plant</th>
-<th>Origin</th>
-<th>Destination</th>
-<th>Temp</th>
-<th>Humidity</th>
-<th>Status</th>
-</tr>
-</thead>
-
-<tbody id="transportBody">
-
-<tr>
-<td>2026-02-05</td>
-<td>TR-001</td>
-<td>Tomato</td>
-<td>Manolo Farm</td>
-<td>CDO Market</td>
-<td>26°C</td>
-<td>52%</td>
-<td>Delivered</td>
-</tr>
-
-<tr>
-<td>2026-02-05</td>
-<td>TR-002</td>
-<td>Tomato</td>
-<td>Manolo Farm</td>
-<td>Davao Market</td>
-<td>30°C</td>
-<td>60%</td>
-<td>In Transit</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- RIGHT MAP -->
-
-<div class="map-side">
-
-<div class="panel">
-
-<div class="panel-title">Transport Route Map</div>
-
-<div id="map"></div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<script src="user.js"></script>
-
+// ── FILTER ───────────────────────────────────────────
+function filterRows() {
+    const q  = document.getElementById("searchInput").value.toLowerCase();
+    const st = document.getElementById("statusFilter").value;
+    document.querySelectorAll("#transportBody tr").forEach(r => {
+        const matchText   = !q  || r.textContent.toLowerCase().includes(q);
+        const matchStatus = st === "all" || r.dataset.status === st;
+        r.style.display   = matchText && matchStatus ? "" : "none";
+    });
+}
+</script>
 </body>
 </html>

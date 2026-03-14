@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenGrow · Create Delivery</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../manager_assets/delivery.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="logo">🌿 GreenGrow<span>Farm Management</span></div>
+    <a href="manager.html" class="nav-btn">Monitoring</a>
+    <a href="datalogsmanager.html" class="nav-btn">Data Logs</a>
+    <a href="transportmanager.html" class="nav-btn">Transport Logs</a>
+    <a href="create_delivery.html" class="nav-btn active">Create Delivery</a>
+    <a href="accounts_manager.html" class="nav-btn">Users</a>
+    <div class="sidebar-foot">
+        <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div class="user-meta">
+                <div class="user-name" id="userName">—</div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">↩ Logout</button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="page-header">
+        <h1>Create Delivery</h1>
+        <p>Schedule and dispatch a new transport order</p>
+    </div>
+
+    <!-- CREATE FORM -->
+    <div class="panel">
+        <div class="panel-title">Delivery Details</div>
+
+        <div class="form-grid">
+
+            <!-- Transport ID -->
+            <div class="form-field">
+                <label>Transport ID</label>
+                <input type="text" id="transportId" placeholder="e.g. TR-003" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <!-- Delivery Date -->
+            <div class="form-field">
+                <label>Delivery Date</label>
+                <input type="date" id="deliveryDate">
+            </div>
+
+            <!-- Plant / Product — fixed to Tomato -->
+            <div class="form-field">
+                <label>Plant / Product</label>
+                <input type="text" id="plantName" value="🍅 Tomato" readonly
+                       style="background:#f0fbf2; border-color:#a7d9b0; color:var(--green); cursor:default;">
+            </div>
+
+            <!-- Quantity — number of plastic crates -->
+            <div class="form-field">
+                <label>Quantity (plastic crates)</label>
+                <input type="number" id="quantity" placeholder="e.g. 20" min="1" step="1"
+                       oninput="this.value = Math.floor(Math.abs(this.value)) || ''">
+            </div>
+
+        </div>
+
+        <!-- Route -->
+        <div class="section-label">Route</div>
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Origin</label>
+                <select id="origin">
+                    <option value="">— Select Origin —</option>
+                    <option value="Farm">🌾 Farm</option>
+                    <option value="CDO Market">🏪 CDO Market</option>
+                    <option value="Davao Market">🏪 Davao Market</option>
+                    <option value="Butuan Market">🏪 Butuan Market</option>
+                    <option value="Iligan Market">🏪 Iligan Market</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Destination</label>
+                <select id="destination">
+                    <option value="">— Select Destination —</option>
+                    <option value="Farm">🌾 Farm</option>
+                    <option value="CDO Market">🏪 CDO Market</option>
+                    <option value="Davao Market">🏪 Davao Market</option>
+                    <option value="Butuan Market">🏪 Butuan Market</option>
+                    <option value="Iligan Market">🏪 Iligan Market</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Conditions & Priority -->
+        <div class="section-label">Conditions</div>
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Temp Range (°C)</label>
+                <input type="text" id="tempRange" value="15 - 30" readonly
+                       style="background:#f0fbf2; border-color:#a7d9b0; color:var(--green); cursor:default;">
+            </div>
+            <div class="form-field">
+                <label>Humidity Range (%)</label>
+                <input type="text" id="humidityRange" value="50 - 60" readonly
+                       style="background:#f0fbf2; border-color:#a7d9b0; color:var(--green); cursor:default;">
+            </div>
+            <div class="form-field">
+                <label>Driver Name</label>
+                <input type="text" id="driverName" placeholder="e.g. Pedro Santos">
+            </div>
+            <div class="form-field">
+                <label>Vehicle Plate</label>
+                <input type="text" id="vehiclePlate" placeholder="e.g. ABC 1234" oninput="this.value = this.value.toUpperCase()">
+            </div>
+        </div>
+
+        <!-- Priority -->
+        <div class="section-label">Priority</div>
+        <div class="priority-group">
+            <input class="priority-option" type="radio" name="priority" id="prio-high"   value="High">
+            <label class="priority-label" for="prio-high">🔴 High</label>
+
+            <input class="priority-option" type="radio" name="priority" id="prio-medium" value="Medium" checked>
+            <label class="priority-label" for="prio-medium">🟡 Medium</label>
+
+            <input class="priority-option" type="radio" name="priority" id="prio-low"    value="Low">
+            <label class="priority-label" for="prio-low">🟢 Low</label>
+        </div>
+
+        <!-- Notes -->
+        <div class="section-label">Additional Notes</div>
+        <div class="form-field">
+            <textarea id="notes" placeholder="Special handling instructions, fragile items, cold chain requirements…"></textarea>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-card" id="previewCard">
+            <h4>📋 Delivery Summary</h4>
+            <div class="preview-grid" id="previewGrid"></div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-secondary" onclick="previewDelivery()">Preview</button>
+            <button class="btn-primary"   onclick="createDelivery()">+ Create Delivery</button>
+        </div>
+    </div>
+
+    <!-- DELIVERY LIST -->
+    <div class="panel">
+        <div class="panel-title">Recent Deliveries</div>
+        <div class="delivery-list" id="deliveryList">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">📦</div>
+                <p>No deliveries created yet</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <div class="toast-icon">✅</div>
+    <div class="toast-body">
+        <div class="toast-title" id="toastTitle">Delivery Created</div>
+        <div class="toast-sub"  id="toastSub"></div>
+    </div>
+</div>
+
+<script>
+// ── LOAD USER ──────────────────────────────────────────
+(function loadUser() {
+    try {
+        const user = JSON.parse(localStorage.getItem("loggedUser") || "{}");
+        document.getElementById("userAvatar").textContent = (user.name || "?").charAt(0).toUpperCase();
+        document.getElementById("userName").textContent   = user.name  || "—";
+        const roleEl = document.getElementById("userRole");
+        roleEl.textContent = user.role || "";
+        roleEl.className   = "user-role role-" + (user.role || "").toLowerCase();
+    } catch(e) {}
+})();
+
+function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("loggedUser");
+        window.location.href = "../index.html";
+    }
+}
+
+// ── SET DEFAULT DATE TO TODAY ──────────────────────────
+document.getElementById("deliveryDate").value = new Date().toISOString().split("T")[0];
+
+// ── AUTO-FILL TEMP/HUMIDITY WHEN PRODUCT SELECTED ─────
+// ── AUTO-FILL TOMATO CONDITIONS ON LOAD ───────────────
+document.getElementById("tempRange").value     = "15 - 30";
+document.getElementById("humidityRange").value = "50 - 60";
+
+// ── DELIVERIES STORAGE ─────────────────────────────────
+let deliveries = JSON.parse(localStorage.getItem("gg_deliveries") || "[]");
+
+function getField(id) { return document.getElementById(id).value.trim(); }
+
+function validate() {
+    const required = [
+        { id: "transportId",   label: "Transport ID" },
+        { id: "deliveryDate",  label: "Delivery Date" },
+        { id: "quantity",      label: "Quantity" },
+        { id: "origin",        label: "Origin" },
+        { id: "destination",   label: "Destination" },
+    ];
+    for (const f of required) {
+        if (!getField(f.id)) {
+            showToast("⚠️ Missing Field", f.label + " is required", true);
+            document.getElementById(f.id).focus();
+            return false;
+        }
+    }
+    if (getField("origin") === getField("destination")) {
+        showToast("⚠️ Invalid Route", "Origin and destination cannot be the same", true);
+        return false;
+    }
+    return true;
+}
+
+// ── PREVIEW ───────────────────────────────────────────
+function previewDelivery() {
+    if (!validate()) return;
+    const priority = document.querySelector('input[name="priority"]:checked').value;
+
+    const rows = [
+        ["Transport ID",   getField("transportId")],
+        ["Product",        getField("plantName")],
+        ["Quantity",       getField("quantity") + " kg"],
+        ["Date",           getField("deliveryDate")],
+        ["Origin",         getField("origin")],
+        ["Destination",    getField("destination")],
+        ["Temp Range",     getField("tempRange") || "—"],
+        ["Humidity Range", getField("humidityRange") || "—"],
+        ["Driver",         getField("driverName") || "—"],
+        ["Vehicle",        getField("vehiclePlate") || "—"],
+        ["Priority",       priority],
+    ];
+
+    const grid = document.getElementById("previewGrid");
+    grid.innerHTML = rows.map(([k, v]) =>
+        `<div class="preview-row"><span>${k}</span><b>${v}</b></div>`
+    ).join("");
+
+    const pc = document.getElementById("previewCard");
+    pc.classList.remove("show");
+    void pc.offsetWidth;
+    pc.classList.add("show");
+    pc.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// ── CREATE DELIVERY ───────────────────────────────────
+function createDelivery() {
+    if (!validate()) return;
+    const priority = document.querySelector('input[name="priority"]:checked').value;
+
+    const delivery = {
+        id:          getField("transportId"),
+        product:     "Tomato",
+        quantity:    getField("quantity"),
+        date:        getField("deliveryDate"),
+        origin:      getField("origin"),
+        destination: getField("destination"),
+        tempRange:   getField("tempRange"),
+        humidity:    getField("humidityRange"),
+        driver:      getField("driverName"),
+        plate:       getField("vehiclePlate"),
+        priority:    priority,
+        notes:       getField("notes"),
+        status:      "Pending",
+        createdAt:   new Date().toISOString(),
+    };
+
+    deliveries.unshift(delivery);
+    localStorage.setItem("gg_deliveries", JSON.stringify(deliveries));
+
+    showToast("✅ Delivery Created", delivery.id + " · " + delivery.product + " → " + delivery.destination);
+    renderList();
+    resetForm();
+}
+
+// ── RENDER DELIVERY LIST ──────────────────────────────
+function renderList() {
+    const list  = document.getElementById("deliveryList");
+    const empty = document.getElementById("emptyState");
+
+    if (deliveries.length === 0) {
+        empty.style.display = "block";
+        // remove all items
+        [...list.querySelectorAll(".delivery-item")].forEach(el => el.remove());
+        return;
+    }
+    empty.style.display = "none";
+
+    const existing = list.querySelectorAll(".delivery-item");
+    existing.forEach(el => el.remove());
+
+    deliveries.forEach((d, i) => {
+        const statusClass   = { "Pending":"pending", "In Transit":"transit", "Delivered":"delivered" }[d.status] || "pending";
+        const priorityClass = { "High":"high", "Medium":"medium", "Low":"low" }[d.priority] || "low";
+        const date = new Date(d.createdAt).toLocaleDateString("en-PH", { month:"short", day:"numeric", year:"numeric" });
+
+        const item = document.createElement("div");
+        item.className = "delivery-item";
+        item.innerHTML = `
+            <div class="delivery-item-icon">🚛</div>
+            <div class="delivery-item-info">
+                <div class="delivery-item-title">${d.product} · ${d.origin} → ${d.destination}</div>
+                <div class="delivery-item-sub">${d.quantity} kg · Driver: ${d.driver || "—"} · ${date}</div>
+            </div>
+            <div class="delivery-item-meta">
+                <div class="delivery-item-id">${d.id}</div>
+                <div style="margin-top:4px; display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap;">
+                    <span class="badge badge-${statusClass}">${d.status}</span>
+                    <span class="badge badge-${priorityClass}">${d.priority}</span>
+                </div>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// ── RESET FORM ────────────────────────────────────────
+function resetForm() {
+    ["transportId","driverName","vehiclePlate","notes"].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+    document.getElementById("quantity").value     = "";
+    document.getElementById("origin").value       = "";
+    document.getElementById("destination").value  = "";
+    document.getElementById("deliveryDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("tempRange").value     = "15 - 30";
+    document.getElementById("humidityRange").value = "50 - 60";
+    document.querySelector('#prio-medium').checked = true;
+    document.getElementById("previewCard").classList.remove("show");
+}
+
+// ── TOAST ─────────────────────────────────────────────
+let toastTimer = null;
+function showToast(title, sub, isError = false) {
+    const toast = document.getElementById("toast");
+    document.getElementById("toastTitle").textContent = title;
+    document.getElementById("toastSub").textContent   = sub;
+    toast.style.borderColor  = isError ? "#fca5a5" : "#86efac";
+    toast.style.color        = isError ? "#991b1b" : "#166534";
+    toast.classList.remove("show");
+    void toast.offsetWidth;
+    toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
+}
+
+// ── INIT ──────────────────────────────────────────────
+renderList();
+</script>
+</body>
+</html>

@@ -43,15 +43,18 @@
     <div class="card-footer">GreenGrow © 2026 · All rights reserved</div>
 </div>
 
-<script src="script.js"></script>
+<!-- ✅ Helper defined FIRST so script.js can call showLoginError() -->
 <script>
-
 function showLoginError() {
     const el = document.getElementById("errorMsg");
     el.classList.remove("show");
-    void el.offsetWidth; // reflow to re-trigger animation
+    void el.offsetWidth; // reflow to re-trigger shake animation
     el.classList.add("show");
 }
 </script>
+
+<!-- ✅ script.js loaded AFTER helper is defined -->
+<script src="script.js"></script>
+
 </body>
 </html>
