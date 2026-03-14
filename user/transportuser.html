@@ -68,7 +68,7 @@
         }
         .map-route-label { font-size: .78rem; color: var(--text); font-weight: 500; letter-spacing: 0; text-transform: none; }
 
-        #map { flex: 1; width: 80%; min-height: 0; display: none; }
+        #map { flex: 1; width: 100%; min-height: 0; display: none; }
 
         .map-idle {
             flex: 1; display: flex; flex-direction: column;
@@ -212,7 +212,11 @@
                 <div id="map"></div>
 
                 <div class="route-info" id="routeInfo">
-                
+                    <div class="route-chip">🆔 <b id="ri-id">--</b></div>
+                    <div class="route-chip">🍅 <b id="ri-plant">--</b></div>
+                    <div class="route-chip">🌡️ <b id="ri-temp">--</b></div>
+                    <div class="route-chip">💧 <b id="ri-hum">--</b></div>
+                    <div class="route-chip">📍 <b id="ri-route">--</b></div>
                 </div>
             </div>
         </div>
